@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M3 native policy engine |
-| Status | M3 enforcement in progress |
-| Active branch | `feature/m3-policy-implementation` |
-| Last merged PR | #14 `docs: specify M3 native policy engine` |
-| Last verified commit | `ee74934` |
-| Next vertical slice | Add policy configuration loading and simulation |
+| Status | M3 enforcement implemented; policy loading and simulation remain |
+| Active branch | `docs/m3-enforcement-checkpoint` |
+| Last merged PR | #16 `feature/m3-policy-enforcement` |
+| Last verified commit | `9c0a9af` |
+| Next vertical slice | Finish policy configuration loading and simulation coverage |
 
 ## Completed
 
@@ -33,12 +33,13 @@
 - M3 T1-T3 policy core implemented and verified.
 - M3 verification is `PASS WITH GAPS`; proxy enforcement and simulation remain.
 - M3 policy enforcement now blocks DENY before upstream invocation and audits the decision.
+- PR #16 merged the M3 policy enforcement slice with the merge commit `9c0a9af`.
 
 ## In progress
 
-- Add CI gates before the next implementation slice is merged.
-- Complete M3 policy loading and simulation.
-- Merge the M3 implementation PR.
+- Complete M3 policy configuration loading.
+- Complete M3 policy simulation coverage and end-to-end enforcement validation.
+- Merge the docs checkpoint capturing the M3 enforcement work.
 
 ## Not started
 
@@ -55,9 +56,11 @@ M0 is `PASS`. M1 is `PASS WITH RESIDUAL RISKS`; M1 risks are documented in
 PR #1 merged the initial documentation and agent harness, PR #2 recorded that checkpoint,
 PR #3 merged the M0 specification, PR #4 merged the gateway foundation, PR #5 closed
 the M0 verification gaps, PR #6 closed the M0 progress checkpoint, PR #7 merged the
-M1 specification, and PR #8 merged the M1 implementation. PR #9 recorded the M1
-checkpoint. CI is now defined in `.github/workflows/ci.yml`; branch protection still needs
-to be enabled in GitHub.
+M1 specification, PR #8 merged the M1 implementation, PR #9 recorded the M1 checkpoint,
+PR #11 merged the M2 JWT authentication foundation, and PR #16 merged the M3 policy
+enforcement implementation with the merge commit `9c0a9af`. CI is defined in
+`.github/workflows/ci.yml`; required status checks and branch protection remain part of
+the repository operating model.
 
 ## Working agreement
 
