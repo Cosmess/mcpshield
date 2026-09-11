@@ -4,12 +4,12 @@
 
 | Field | Value |
 | --- | --- |
-| Phase | M5 DLP and secret detection |
-| Status | M5 PASS WITH RESIDUAL RISKS |
-| Active branch | `docs/m5-completion-checkpoint` |
-| Last merged PR | #28 `fix: inspect text MCP responses for DLP` |
-| Last verified commit | `ff01f54` |
-| Next vertical slice | M6 human approval |
+| Phase | M6 human approval |
+| Status | M6 specification in progress |
+| Active branch | `feature/m6-approval-spec` |
+| Last merged PR | #29 `docs: record M5 completion checkpoint` |
+| Last verified commit | `919c896` |
+| Next vertical slice | Human review/merge M6 specification, then approval-gated implementation |
 
 ## Completed
 
@@ -46,10 +46,11 @@
 - M5 T1-T4 DLP core and request-side proxy integration implemented.
 - M5 verification is `PASS WITH RESIDUAL RISKS`; request/response inspection, sanitized DLP audit metadata, and fixed inspection/block/redaction counters are implemented.
 - PR #28 merged the M5 response inspection and metrics fix with merge commit `ff01f54`.
+- M6 human approval specification, design, and tasks prepared.
 
 ## In progress
 
-- M6 human approval requires human approval before implementation begins.
+- M6 specification review requires explicit human approval before implementation begins.
 
 ## Not started
 

@@ -10,9 +10,9 @@
 
 ## Handoff
 
-- Current phase: M5 complete with residual risks.
-- Active work: M5 completion checkpoint recorded after PR #28.
-- Next action: obtain human approval for M6 human approval specification.
+- Current phase: M6 specification in progress.
+- Active work: M6 human approval specification review.
+- Next action: obtain explicit human approval before implementation begins.
 - Current status: PASS WITH RESIDUAL RISKS.
 - Completed: request/response inspection, sanitized DLP audit metadata, and fixed DLP inspection/block/redaction counters.
 - Merge commit: `ff01f54` (PR #28).
