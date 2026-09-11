@@ -1,6 +1,7 @@
 package policy
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/Cosmess/mcpshield/internal/identity"
@@ -45,5 +46,32 @@ func TestRejectsInvalidRules(t *testing.T) {
 	}
 	if _, err := New([]Rule{{ID: "bad", Decision: Allow, ToolPattern: "["}}); err == nil {
 		t.Fatal("invalid pattern accepted")
+	}
+}
+
+func TestLoadJSONValidatesAndBuildsEngine(t *testing.T) {
+	engine, err := LoadJSON(strings.NewReader(`{"policies":[{"id":"developer-read","priority":10,"decision":"ALLOW","roles":["developer"],"toolPattern":"github.read_*","operation":"READ"}]}`))
+	if err != nil {
+		t.Fatalf("LoadJSON() error = %v", err)
+	}
+	result := engine.Evaluate(Input{Principal: identity.Principal{Roles: []string{"developer"}}, Tool: "github.read_issue", Operation: Read})
+	if result.Decision != Allow || len(result.MatchedIDs) != 1 {
+		t.Fatalf("result = %#v", result)
+	}
+}
+
+func TestSimulationHasNoSideEffects(t *testing.T) {
+	engine, err := New([]Rule{{ID: "deny", Decision: Deny}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	input := Input{Tool: "shell.execute", Operation: Execution}
+	simulated := engine.Simulate(input)
+	live := engine.Evaluate(input)
+	if simulated.Decision != live.Decision || len(simulated.MatchedIDs) != len(live.MatchedIDs) {
+		t.Fatalf("simulation = %#v, live = %#v", simulated, live)
+	}
+	if after := engine.Evaluate(Input{Tool: "github.read_issue", Operation: Read}); after.Decision != Deny {
+		t.Fatalf("simulation mutated engine: %#v", after)
 	}
 }

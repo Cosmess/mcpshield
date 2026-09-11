@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M3 native policy engine |
-| Status | M3 enforcement implemented; policy loading and simulation remain |
-| Active branch | `docs/m3-enforcement-checkpoint` |
-| Last merged PR | #16 `feature/m3-policy-enforcement` |
-| Last verified commit | `9c0a9af` |
-| Next vertical slice | Finish policy configuration loading and simulation coverage |
+| Status | M3 nearly complete; PR pending |
+| Active branch | `feature/m3-policy-loading` |
+| Last merged PR | #17 `docs: record M3 enforcement checkpoint` |
+| Last verified commit | `031e901` |
+| Next vertical slice | Wire policy document into gateway startup, then begin M4 risk engine |
 
 ## Completed
 
@@ -31,15 +31,15 @@
 - M2 gap fix adds auth audit/metrics, JWKS TTL/refresh tests, and token edge-case coverage.
 - M3 policy engine specification, design, and tasks prepared.
 - M3 T1-T3 policy core implemented and verified.
-- M3 verification is `PASS WITH GAPS`; proxy enforcement and simulation remain.
+- M3 verification is `PASS WITH GAPS`; gateway startup wiring remains.
 - M3 policy enforcement now blocks DENY before upstream invocation and audits the decision.
 - PR #16 merged the M3 policy enforcement slice with the merge commit `9c0a9af`.
+- Structured policy loading and side-effect-free simulation are implemented and tested.
 
 ## In progress
 
-- Complete M3 policy configuration loading.
-- Complete M3 policy simulation coverage and end-to-end enforcement validation.
-- Merge the docs checkpoint capturing the M3 enforcement work.
+- Wire policy loading into gateway startup configuration.
+- Merge the M3 loading/simulation PR.
 
 ## Not started
 

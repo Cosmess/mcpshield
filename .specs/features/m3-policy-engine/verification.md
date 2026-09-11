@@ -4,7 +4,8 @@
 
 `PASS WITH GAPS`
 
-The M3 policy core and proxy enforcement T1-T4 are implemented and verified: typed
+The M3 policy core, proxy enforcement, structured policy loading, and side-effect-free
+simulation are implemented and verified: typed
 decisions, operation classification, validated immutable rules, default deny,
 multidimensional matching, priority ordering, deny-wins ties, and pre-upstream denial.
 Simulation and policy configuration loading remain for the next M3 slice.
@@ -20,7 +21,7 @@ Simulation and policy configuration loading remain for the next M3 slice.
 | M3-AC5 | Classifier test for discovery/read/write/execution/unknown | PASS WITH GAP |
 | M3-AC6 | Typed decision model contains all five outcomes | PASS |
 | M3-AC7 | Proxy integration test proves DENY prevents upstream invocation and audits `policy_denied` | PASS |
-| M3-AC8 | Simulation path not implemented yet | GAP |
+| M3-AC8 | `Engine.Simulate` parity and no-mutation test | PASS |
 | M3-AC9 | Duplicate IDs, invalid decisions, and invalid patterns are rejected | PASS |
 
 ## Executed gates
@@ -34,7 +35,7 @@ go vet ./internal/policy  PASS
 
 ## Remaining work
 
-- Add policy configuration loading and simulation endpoint/use case.
+- Wire loaded policy documents into gateway startup configuration.
 - Add audit events for approval, redaction, and limits outcomes when those executors exist.
 - Add side-effect-free policy simulation.
 - Run full repository gates before the implementation PR.

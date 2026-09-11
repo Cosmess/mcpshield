@@ -1,7 +1,9 @@
 package policy
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"path"
 	"sort"
 	"strings"
@@ -59,6 +61,18 @@ type Result struct {
 }
 
 type Engine struct{ rules []Rule }
+
+type document struct {
+	Policies []Rule `json:"policies"`
+}
+
+func LoadJSON(reader io.Reader) (*Engine, error) {
+	var document document
+	if err := json.NewDecoder(reader).Decode(&document); err != nil {
+		return nil, fmt.Errorf("decode policy document: %w", err)
+	}
+	return New(document.Policies)
+}
 
 func New(rules []Rule) (*Engine, error) {
 	seen := make(map[string]struct{}, len(rules))
