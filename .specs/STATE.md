@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: M3 implementation in progress.
-- Active work: integrate policy enforcement and simulation.
-- Next action: close M3 verification gaps before merge.
+- Current phase: M3 complete with residual risks.
+- Active work: review and merge the M3 startup-wiring PR.
+- Next action: specify the M4 deterministic risk engine after M3 merge.
 - Known blockers: GitHub status checks and branch protection are not configured yet.

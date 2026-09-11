@@ -16,6 +16,7 @@ import (
 	"github.com/Cosmess/mcpshield/internal/config"
 	"github.com/Cosmess/mcpshield/internal/httpapi"
 	"github.com/Cosmess/mcpshield/internal/mcpproxy"
+	"github.com/Cosmess/mcpshield/internal/policy"
 	"github.com/Cosmess/mcpshield/internal/upstream"
 )
 
@@ -50,6 +51,21 @@ func run(parent context.Context, logger *slog.Logger) error {
 		return fmt.Errorf("create MCP proxy: %w", err)
 	}
 	defer proxy.Close()
+	if config.PolicyFile != "" {
+		policyFile, err := os.Open(config.PolicyFile)
+		if err != nil {
+			return fmt.Errorf("open policy file: %w", err)
+		}
+		engine, loadErr := policy.LoadJSON(policyFile)
+		closeErr := policyFile.Close()
+		if loadErr != nil {
+			return fmt.Errorf("load policy file: %w", loadErr)
+		}
+		if closeErr != nil {
+			return fmt.Errorf("close policy file: %w", closeErr)
+		}
+		proxy.SetPolicy(engine)
+	}
 	api.SetMCPHandler(proxy.Handler())
 	server := &http.Server{
 		Addr:              config.HTTPAddr,
