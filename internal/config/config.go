@@ -19,6 +19,7 @@ type Config struct {
 	AuthAudience    string
 	AuthJWKSURL     string
 	PolicyFile      string
+	DatabaseURL     string
 }
 
 func Load() (Config, error) {
@@ -55,6 +56,7 @@ func Load() (Config, error) {
 	config.AuthAudience = os.Getenv("MCP_SHIELD_OIDC_AUDIENCE")
 	config.AuthJWKSURL = os.Getenv("MCP_SHIELD_OIDC_JWKS_URL")
 	config.PolicyFile = os.Getenv("MCP_SHIELD_POLICY_FILE")
+	config.DatabaseURL = os.Getenv("MCP_SHIELD_DATABASE_URL")
 	authValues := 0
 	for _, value := range []string{config.AuthIssuer, config.AuthAudience, config.AuthJWKSURL} {
 		if value != "" {

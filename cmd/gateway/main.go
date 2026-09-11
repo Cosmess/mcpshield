@@ -20,6 +20,7 @@ import (
 	"github.com/Cosmess/mcpshield/internal/mcpproxy"
 	"github.com/Cosmess/mcpshield/internal/policy"
 	"github.com/Cosmess/mcpshield/internal/upstream"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func main() {
@@ -54,7 +55,23 @@ func run(parent context.Context, logger *slog.Logger) error {
 		return fmt.Errorf("create MCP proxy: %w", err)
 	}
 	defer proxy.Close()
-	approvalService := approval.NewService(approval.NewMemoryRepository())
+	approvalRepository := approval.Repository(approval.NewMemoryRepository())
+	var databasePool *pgxpool.Pool
+	if config.DatabaseURL != "" {
+		databasePool, err = pgxpool.New(parent, config.DatabaseURL)
+		if err != nil {
+			return fmt.Errorf("create database pool: %w", err)
+		}
+		defer databasePool.Close()
+		if err := databasePool.Ping(parent); err != nil {
+			return fmt.Errorf("ping database: %w", err)
+		}
+		if err := approval.ApplyMigration(parent, databasePool); err != nil {
+			return err
+		}
+		approvalRepository = approval.NewPostgresRepository(databasePool)
+	}
+	approvalService := approval.NewService(approvalRepository)
 	approvalService.SetTransitionHook(func(status approval.Status, record approval.Record) {
 		auditSink.Record(audit.Event{UpstreamID: record.UpstreamID, MCPMethod: record.Method, Outcome: "approval_" + strings.ToLower(string(status)), OccurredAt: time.Now()})
 	})

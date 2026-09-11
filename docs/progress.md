@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M6 human approval |
-| Status | M6 lifecycle API/metrics in progress |
-| Active branch | `feature/m6-approval-api-metrics` |
-| Last merged PR | #33 `feat: consume bound approvals before upstream` |
-| Last verified commit | `8713cd9` |
-| Next vertical slice | Add lifecycle audit hook, then PostgreSQL repository |
+| Status | M6 PostgreSQL persistence in progress |
+| Active branch | `feature/m6-postgres-approval` |
+| Last merged PR | #35 `feat: audit M6 approval lifecycle transitions` |
+| Last verified commit | `dd62ca4` |
+| Next vertical slice | Add PostgreSQL integration tests, then close M6 |
 
 ## Completed
 
@@ -52,11 +52,12 @@
 - M6 T4 approval gate creates PENDING and prevents automatic upstream execution.
 - M6 reviewer/consume service operations are wired to bound proxy headers.
 - M6 reviewer routes and fixed lifecycle metrics are implemented and tested.
+- M6 PostgreSQL repository, migration, optional startup wiring, and atomic consume are implemented.
 
 ## In progress
 
-- Add approval lifecycle audit hook.
-- Merge the M6 API/metrics PR.
+- Add PostgreSQL Testcontainer integration coverage.
+- Merge the M6 PostgreSQL persistence PR.
 
 ## Not started
 

@@ -176,6 +176,19 @@ deny quando nenhuma regra corresponder.
 O PostgreSQL sera adicionado quando o repository de approvals/auditoria for implementado.
 Isso evita esconder estado de seguranca em memoria quando o sistema passar a operar em HA.
 
+Quando `MCP_SHIELD_DATABASE_URL` estiver configurado, o gateway usa PostgreSQL para o
+estado de approvals e aplica a migration de approval no startup. Sem essa variavel, o
+modo local continua usando o repository em memoria:
+
+```bash
+MCP_SHIELD_DATABASE_URL=postgres://mcpshield:mcpshield@localhost:5432/mcpshield \
+go run ./cmd/gateway
+```
+
+O consumo de approval no PostgreSQL usa uma atualizacao condicional atomica para impedir
+que dois requests concorrentes reutilizem a mesma aprovacao. O banco do MCPShield guarda
+governanca e seguranca; ele continua separado do banco de negocio do servidor MCP.
+
 ## Documentacao de engenharia
 
 - [Estado e progresso](docs/progress.md)
