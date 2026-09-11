@@ -10,9 +10,9 @@
 
 ## Handoff
 
-- Current phase: M6 PostgreSQL persistence verified.
-- Active work: review and merge the M6 integration-test PR.
-- Next action: close M6 with production persistence risks documented.
+- Current phase: M7 specification in progress.
+- Active work: review the OPA/Rego adapter requirements, design, and tasks.
+- Next action: validate and merge the M7 specification before implementation.
 - Current status: PASS WITH RESIDUAL RISKS.
 - Completed: request/response inspection, sanitized DLP audit metadata, and fixed DLP inspection/block/redaction counters.
 - Merge commit: `ff01f54` (PR #28).

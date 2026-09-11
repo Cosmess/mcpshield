@@ -4,12 +4,12 @@
 
 | Field | Value |
 | --- | --- |
-| Phase | M6 human approval |
-| Status | M6 PostgreSQL persistence verified; PR pending |
-| Active branch | `test/m6-postgres-integration` |
-| Last merged PR | #35 `feat: audit M6 approval lifecycle transitions` |
-| Last verified commit | `dd62ca4` |
-| Next vertical slice | Merge PostgreSQL integration PR, then close M6 |
+| Phase | M7 OPA/Rego adapter |
+| Status | M7 specification in progress |
+| Active branch | `feature/m7-opa-adapter-spec` |
+| Last merged PR | #37 `test: verify M6 PostgreSQL approval persistence` |
+| Last verified commit | `279047c` |
+| Next vertical slice | Review/merge M7 specification, then implement T1-T6 |
 
 ## Completed
 
@@ -54,16 +54,16 @@
 - M6 reviewer routes and fixed lifecycle metrics are implemented and tested.
 - M6 PostgreSQL repository, migration, optional startup wiring, and atomic consume are implemented.
 - M6 Testcontainers PostgreSQL tests verify migration, lifecycle, replay rejection, and one-success concurrent consume.
+- M7 OPA/Rego adapter specification, design, and tasks prepared.
 
 ## In progress
 
-- Merge the M6 PostgreSQL integration PR.
-- Close M6 with production persistence risks documented.
+- Review and merge the M7 specification before implementation.
 
 ## Not started
 
 - PostgreSQL migrations and audit persistence.
-- Approvals, Kafka, and AI.
+- Kafka and AI.
 
 ## Current verification
 
