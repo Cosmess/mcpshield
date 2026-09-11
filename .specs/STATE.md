@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: project bootstrap.
-- Active work: initial documentation and agent harness.
-- Next action: verify the bootstrap, open a Pull Request, merge it, and start the M0 spec.
-- Known blockers: GitHub branch protection and PR permissions have not yet been verified.
+- Current phase: project bootstrap complete.
+- Active work: prepare the M0 feature specification.
+- Next action: create the M0 SDD artifacts on a focused branch and add the first Go module slice.
+- Known blockers: GitHub status checks and branch protection are not configured yet.
