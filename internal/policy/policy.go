@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Cosmess/mcpshield/internal/identity"
+	"github.com/Cosmess/mcpshield/internal/risk"
 )
 
 type Decision string
@@ -39,6 +40,7 @@ type Input struct {
 	Tool       string
 	Operation  OperationClass
 	Arguments  map[string]any
+	Risk       *risk.Result
 }
 
 type Rule struct {

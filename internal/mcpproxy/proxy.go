@@ -8,11 +8,13 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/Cosmess/mcpshield/internal/audit"
 	"github.com/Cosmess/mcpshield/internal/identity"
 	"github.com/Cosmess/mcpshield/internal/policy"
+	"github.com/Cosmess/mcpshield/internal/risk"
 	"github.com/Cosmess/mcpshield/internal/upstream"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -20,12 +22,15 @@ import (
 const ProtocolVersion = "2026-07-28"
 
 type Proxy struct {
-	logger   *slog.Logger
-	audit    audit.Sink
-	servers  map[string]*mcp.StreamableHTTPHandler
-	sessions map[string]*mcp.ClientSession
-	mu       sync.RWMutex
-	policy   *policy.Engine
+	logger          *slog.Logger
+	audit           audit.Sink
+	servers         map[string]*mcp.StreamableHTTPHandler
+	sessions        map[string]*mcp.ClientSession
+	mu              sync.RWMutex
+	policy          *policy.Engine
+	riskEvaluations atomic.Uint64
+	riskHigh        atomic.Uint64
+	riskCritical    atomic.Uint64
 }
 
 func (proxy *Proxy) SetPolicy(engine *policy.Engine) { proxy.policy = engine }
@@ -115,6 +120,20 @@ func (proxy *Proxy) addUpstream(ctx context.Context, definition upstream.Definit
 func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.ClientSession, toolName string) mcp.ToolHandler {
 	return func(ctx context.Context, request *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		started := time.Now()
+		operation := policy.Classify("tools/call", toolName)
+		signalIDs := riskSignals(operation)
+		riskResult, riskErr := risk.Evaluate(risk.Input{Signals: signalIDs})
+		if riskErr != nil {
+			proxy.audit.Record(audit.Event{RequestID: requestIDFromContext(ctx), UpstreamID: definition.ID, MCPMethod: "tools/call", Outcome: "risk_error", Duration: time.Since(started), OccurredAt: time.Now()})
+			return &mcp.CallToolResult{IsError: true}, fmt.Errorf("evaluate risk: %w", riskErr)
+		}
+		proxy.riskEvaluations.Add(1)
+		if riskResult.Severity == risk.High {
+			proxy.riskHigh.Add(1)
+		}
+		if riskResult.Severity == risk.Critical {
+			proxy.riskCritical.Add(1)
+		}
 		if proxy.policy != nil {
 			principal, _ := identity.FromContext(ctx)
 			arguments := map[string]any{}
@@ -123,9 +142,9 @@ func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.Cli
 					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("decode tool arguments for policy: %w", err)
 				}
 			}
-			result := proxy.policy.Evaluate(policy.Input{Principal: principal, UpstreamID: definition.ID, Method: "tools/call", Tool: toolName, Operation: policy.Classify("tools/call", toolName), Arguments: arguments})
+			result := proxy.policy.Evaluate(policy.Input{Principal: principal, UpstreamID: definition.ID, Method: "tools/call", Tool: toolName, Operation: operation, Arguments: arguments, Risk: &riskResult})
 			if result.Decision == policy.Deny {
-				proxy.audit.Record(audit.Event{RequestID: requestIDFromContext(ctx), UpstreamID: definition.ID, MCPMethod: "tools/call", Outcome: "policy_denied", Duration: time.Since(started), OccurredAt: time.Now()})
+				proxy.audit.Record(riskEvent(ctx, definition.ID, "policy_denied", riskResult, time.Since(started)))
 				return &mcp.CallToolResult{IsError: true}, fmt.Errorf("policy denied: %s", result.Reason)
 			}
 		}
@@ -137,9 +156,34 @@ func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.Cli
 		if ctx.Err() != nil {
 			outcome = "client_canceled"
 		}
-		proxy.audit.Record(audit.Event{RequestID: requestIDFromContext(ctx), UpstreamID: definition.ID, MCPMethod: "tools/call", Outcome: outcome, ProtocolVersion: ProtocolVersion, Duration: time.Since(started), OccurredAt: time.Now()})
+		proxy.audit.Record(riskEvent(ctx, definition.ID, outcome, riskResult, time.Since(started)))
 		return result, err
 	}
+}
+
+func (proxy *Proxy) RiskMetrics() string {
+	return fmt.Sprintf("mcpshield_risk_evaluations_total %d\nmcpshield_risk_high_total %d\nmcpshield_risk_critical_total %d\n", proxy.riskEvaluations.Load(), proxy.riskHigh.Load(), proxy.riskCritical.Load())
+}
+
+func riskSignals(operation policy.OperationClass) []string {
+	switch operation {
+	case policy.Admin:
+		return []string{"privileged_operation", "write_operation"}
+	case policy.Execution:
+		return []string{"execution_operation"}
+	case policy.Write:
+		return []string{"write_operation"}
+	default:
+		return nil
+	}
+}
+
+func riskEvent(ctx context.Context, upstreamID, outcome string, result risk.Result, duration time.Duration) audit.Event {
+	signals := make([]string, 0, len(result.Signals))
+	for _, signal := range result.Signals {
+		signals = append(signals, signal.ID)
+	}
+	return audit.Event{RequestID: requestIDFromContext(ctx), UpstreamID: upstreamID, MCPMethod: "tools/call", Outcome: outcome, ProtocolVersion: ProtocolVersion, Duration: duration, OccurredAt: time.Now(), RiskScore: result.Score, RiskSeverity: string(result.Severity), RiskSignals: signals}
 }
 
 type requestIDKey struct{}

@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M4 deterministic risk engine |
-| Status | PASS WITH GAPS |
-| Active branch | `docs/m4-risk-core-checkpoint` |
-| Last merged PR | #21 `feat: add M4 deterministic risk core` |
-| Last verified commit | `ea46e11b92dead58544ebf127104d3df2c62c731` |
-| Next vertical slice | Integrate risk with policy/proxy and add audit/metrics |
+| Status | M4 integration complete; PR pending |
+| Active branch | `feature/m4-risk-policy-integration` |
+| Last merged PR | #22 `docs: record m4 risk core checkpoint` |
+| Last verified commit | `16f93b5` |
+| Next vertical slice | Merge M4 integration, then begin M5 DLP and secret detection |
 
 ## Completed
 
@@ -39,11 +39,12 @@
 - M4 deterministic risk engine specification, design, and tasks prepared.
 - M4 T1-T3 risk core implemented and verified.
 - M4 risk core merged via PR #21 with merge commit `ea46e11b92dead58544ebf127104d3df2c62c731`.
-- M4 verification is `PASS WITH GAPS`; policy/proxy integration and audit/metrics remain.
+- M4 verification is `PASS WITH RESIDUAL RISKS`; policy/proxy integration and audit/metrics are implemented.
 
 ## In progress
 
-- Complete M4 policy/proxy integration and audit/metrics.
+- Merge the M4 policy/proxy integration PR.
+- Begin M5 DLP and secret detection specification.
 
 ## Not started
 
