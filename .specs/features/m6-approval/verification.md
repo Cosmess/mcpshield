@@ -5,8 +5,8 @@
 `PASS WITH GAPS`
 
 M6 T1-T4 are implemented: approval state domain, policy-bound fingerprinting, reviewer
-authorization, expiry, denial, in-memory repository, atomic one-time consumption, and a
-proxy gate that prevents automatic execution.
+authorization, expiry, denial, in-memory repository, atomic one-time consumption, and proxy
+consumption through bound approval headers.
 
 ## Acceptance criteria evidence
 
@@ -18,7 +18,7 @@ proxy gate that prevents automatic execution.
 | M6-AC4 | Expiry checks on create/review/consume | PASS |
 | M6-AC5 | Canonical fingerprint includes principal, request, policy decision, and risk context | PASS |
 | M6-AC6 | Atomic in-memory consume with concurrent one-success test | PASS |
-| M6-AC7 | Proxy creates PENDING for REQUIRE_APPROVAL and prevents automatic upstream execution | PASS |
+| M6-AC7 | Proxy creates PENDING without headers and consumes only a matching approved fingerprint | PASS |
 | M6-AC8 | No AI approval transition exists in the domain API | PASS WITH GAP |
 | M6-AC9 | State transition and race tests pass for the in-memory repository | PASS WITH GAP |
 
@@ -33,7 +33,7 @@ go vet ./internal/approval  PASS
 
 ## Remaining work
 
-- Expose reviewer and consume operations, then allow only consumed approvals to reach upstream.
+- Add HTTP reviewer operations and lifecycle metrics.
 - Add approval lifecycle audit events and fixed-status metrics.
 - Replace in-memory repository with PostgreSQL-backed authoritative storage.
 - Run full repository gates before the implementation PR.

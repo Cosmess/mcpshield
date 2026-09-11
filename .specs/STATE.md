@@ -10,8 +10,8 @@
 
 ## Handoff
 
-- Current phase: M6 implementation in progress.
-- Active work: integrate REQUIRE_APPROVAL with the proxy and add lifecycle audit/metrics.
+- Current phase: M6 consume integration in progress.
+- Active work: add HTTP reviewer operations, lifecycle metrics, and PostgreSQL repository.
 - Next action: close M6 verification gaps before merge.
 - Current status: PASS WITH RESIDUAL RISKS.
 - Completed: request/response inspection, sanitized DLP audit metadata, and fixed DLP inspection/block/redaction counters.
