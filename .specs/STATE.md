@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: M1 complete with residual risks.
-- Active work: prepare the M2 authentication and identity specification.
-- Next action: define caller identity, upstream credential boundaries, and authentication tests.
+- Current phase: M2 specification in progress.
+- Active work: review the authentication and identity requirements, design, and task breakdown.
+- Next action: validate and merge the M2 specification before implementation.
 - Known blockers: GitHub status checks and branch protection are not configured yet.
