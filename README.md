@@ -8,8 +8,8 @@ auditoria. O agente de IA nunca sera a autoridade final para permitir uma operac
 
 ## Estado atual
 
-O projeto esta no bootstrap documental. A implementacao sera conduzida em fatias
-verticais usando desenvolvimento orientado a especificacao (SDD), com verificacao
+O bootstrap e a primeira fatia MCP ja foram concluidos. A implementacao continua em
+fatias verticais usando desenvolvimento orientado a especificacao (SDD), com verificacao
 independente antes de considerar uma tarefa concluida.
 
 Consulte [docs/progress.md](docs/progress.md) para o estado atual, o que foi
@@ -51,6 +51,19 @@ docker compose config
 
 Com o gateway em execucao, consulte `http://127.0.0.1:8080/health/live`,
 `http://127.0.0.1:8080/health/ready` e `http://127.0.0.1:8080/metrics`.
+
+Para testar um upstream MCP local, configure o endpoint confiavel e o ID publicado pelo
+gateway:
+
+```bash
+MCP_SHIELD_UPSTREAM_ID=mock \
+MCP_SHIELD_UPSTREAM_ENDPOINT=http://127.0.0.1:9000/mcp \
+go run ./cmd/gateway
+```
+
+O proxy fica disponivel em `/mcp/mock`. O M1 usa o SDK oficial Go, Streamable HTTP e MCP
+`2026-07-28`. Autenticacao, politicas, credenciais de upstream e protecao completa contra
+SSRF ainda pertencem as proximas fases.
 
 ## Licenca
 

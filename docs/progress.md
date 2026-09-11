@@ -4,12 +4,12 @@
 
 | Field | Value |
 | --- | --- |
-| Phase | M0 bootstrap |
-| Status | M1 specification in progress |
-| Active branch | `feature/m1-mcp-proxy-spec` |
-| Last merged PR | #6 `docs: close M0 progress checkpoint` |
-| Last verified commit | `458e38d` |
-| Next vertical slice | Review/merge M1 specification, then implement T1-T6 |
+| Phase | M1 remote MCP proxy |
+| Status | M1 implementation verified; PR pending |
+| Active branch | `feature/m1-mcp-proxy-implementation` |
+| Last merged PR | #7 `docs: specify M1 remote MCP proxy` |
+| Last verified commit | `8032add` |
+| Next vertical slice | Merge M1 implementation, then begin M2 authentication and identity |
 
 ## Completed
 
@@ -22,12 +22,14 @@
 - Full local gates pass: tests, race tests, vet, build, Compose config, and diff check.
 - Corrective tests cover oversized requests, bounded in-flight shutdown, and safe config errors.
 - M1 specification, design, and task breakdown prepared under `.specs/features/m1-mcp-proxy/`.
+- M1 SDK-backed proxy, trusted registry, audit sink, and integration tests implemented.
+- M1 local verification is `PASS WITH RESIDUAL RISKS`; see the feature verification report.
 
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
-- Specify M1 remote MCP reverse proxy requirements and protocol baseline.
-- Complete M1 specification review and merge before implementation.
+- Merge the M1 implementation PR.
+- Start M2 authentication and identity specification after M1 merge.
 
 ## Not started
 
@@ -39,15 +41,15 @@
 
 ## Current verification
 
-M0 is `PASS`. The remaining residual risks are documented in
-`.specs/features/m0-bootstrap/verification.md`; no secret-bearing configuration exists in
-this slice yet.
+M0 is `PASS`. M1 is `PASS WITH RESIDUAL RISKS`; M1 risks are documented in
+`.specs/features/m1-mcp-proxy/verification.md`.
 
 ## Latest merge
 
 PR #1 merged the initial documentation and agent harness, PR #2 recorded that checkpoint,
-PR #3 merged the M0 specification, PR #4 merged the gateway foundation, and PR #5 closed
-the M0 verification gaps. No GitHub status checks are configured yet.
+PR #3 merged the M0 specification, PR #4 merged the gateway foundation, PR #5 closed
+the M0 verification gaps, PR #6 closed the M0 progress checkpoint, and PR #7 merged the
+M1 specification. No GitHub status checks are configured yet.
 
 ## Working agreement
 

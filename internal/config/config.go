@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/Cosmess/mcpshield/internal/upstream"
 )
 
 type Config struct {
@@ -12,6 +14,7 @@ type Config struct {
 	RequestTimeout  time.Duration
 	ShutdownTimeout time.Duration
 	MaxBodyBytes    int64
+	Upstreams       []upstream.Definition
 }
 
 func Load() (Config, error) {
@@ -43,6 +46,19 @@ func Load() (Config, error) {
 	}
 	if config.HTTPAddr == "" {
 		return Config{}, fmt.Errorf("MCP_SHIELD_HTTP_ADDR must not be empty")
+	}
+	if upstreamID := os.Getenv("MCP_SHIELD_UPSTREAM_ID"); upstreamID != "" {
+		endpoint := os.Getenv("MCP_SHIELD_UPSTREAM_ENDPOINT")
+		if endpoint == "" {
+			return Config{}, fmt.Errorf("MCP_SHIELD_UPSTREAM_ENDPOINT must not be empty when MCP_SHIELD_UPSTREAM_ID is set")
+		}
+		config.Upstreams = []upstream.Definition{{
+			ID:              upstreamID,
+			Endpoint:        endpoint,
+			Enabled:         true,
+			Timeout:         config.RequestTimeout,
+			ProtocolVersion: "2026-07-28",
+		}}
 	}
 	return config, nil
 }

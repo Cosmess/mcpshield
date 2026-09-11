@@ -11,8 +11,11 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Cosmess/mcpshield/internal/audit"
 	"github.com/Cosmess/mcpshield/internal/config"
 	"github.com/Cosmess/mcpshield/internal/httpapi"
+	"github.com/Cosmess/mcpshield/internal/mcpproxy"
+	"github.com/Cosmess/mcpshield/internal/upstream"
 )
 
 func main() {
@@ -30,6 +33,16 @@ func run(parent context.Context, logger *slog.Logger) error {
 	}
 
 	api := httpapi.New(logger, config.RequestTimeout, config.MaxBodyBytes)
+	registry, err := upstream.NewRegistry(config.Upstreams)
+	if err != nil {
+		return fmt.Errorf("create upstream registry: %w", err)
+	}
+	proxy, err := mcpproxy.New(parent, registry, logger, audit.NewMemorySink(1024))
+	if err != nil {
+		return fmt.Errorf("create MCP proxy: %w", err)
+	}
+	defer proxy.Close()
+	api.SetMCPHandler(proxy.Handler())
 	server := &http.Server{
 		Addr:              config.HTTPAddr,
 		Handler:           api.Handler(),
