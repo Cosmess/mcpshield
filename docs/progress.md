@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M3 native policy engine |
-| Status | M3 specification in progress |
-| Active branch | `feature/m3-policy-spec` |
-| Last merged PR | #13 `test: close M2 authentication verification gaps` |
-| Last verified commit | `f145a62` |
-| Next vertical slice | Review/merge M3 specification, then implement T1-T6 |
+| Status | M3 implementation in progress |
+| Active branch | `feature/m3-policy-implementation` |
+| Last merged PR | #14 `docs: specify M3 native policy engine` |
+| Last verified commit | `ee74934` |
+| Next vertical slice | Integrate policy enforcement and simulation |
 
 ## Completed
 
@@ -30,11 +30,14 @@
 - PR #11 merged the M2 JWT authentication foundation with all CI gates passing.
 - M2 gap fix adds auth audit/metrics, JWKS TTL/refresh tests, and token edge-case coverage.
 - M3 policy engine specification, design, and tasks prepared.
+- M3 T1-T3 policy core implemented and verified.
+- M3 verification is `PASS WITH GAPS`; proxy enforcement and simulation remain.
 
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
-- Review and merge the M3 specification before implementation.
+- Complete M3 proxy enforcement and simulation.
+- Merge the M3 implementation PR.
 
 ## Not started
 

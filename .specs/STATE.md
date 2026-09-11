@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: M3 specification in progress.
-- Active work: review the native policy engine requirements, design, and tasks.
-- Next action: validate and merge the M3 specification before implementation.
+- Current phase: M3 implementation in progress.
+- Active work: integrate policy enforcement and simulation.
+- Next action: close M3 verification gaps before merge.
 - Known blockers: GitHub status checks and branch protection are not configured yet.
