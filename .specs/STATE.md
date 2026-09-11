@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: M2 complete with residual risks.
-- Active work: review and merge the M2 authentication gap-fix PR.
-- Next action: specify the M3 native policy engine after M2 merge.
+- Current phase: M3 specification in progress.
+- Active work: review the native policy engine requirements, design, and tasks.
+- Next action: validate and merge the M3 specification before implementation.
 - Known blockers: GitHub status checks and branch protection are not configured yet.
