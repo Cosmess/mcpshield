@@ -72,6 +72,22 @@ func TestProxyRelaysDiscoveryAndToolCalls(t *testing.T) {
 	if metrics := proxy.RiskMetrics(); !strings.Contains(metrics, "mcpshield_risk_evaluations_total 1") {
 		t.Fatalf("risk metrics = %q", metrics)
 	}
+	blocked, err := session.CallTool(context.Background(), &mcp.CallToolParams{Name: "greet", Arguments: map[string]any{"key": "-----BEGIN RSA PRIVATE KEY-----"}})
+	if err == nil && (blocked == nil || !blocked.IsError) {
+		t.Fatalf("DLP-blocked CallTool() = %#v, %v", blocked, err)
+	}
+	foundDLPBlock := false
+	for _, event := range sink.Events() {
+		if event.Outcome == "dlp_blocked" {
+			foundDLPBlock = true
+			if len(event.DLPDetectors) == 0 || len(event.DLPPaths) == 0 {
+				t.Fatalf("DLP audit event = %#v", event)
+			}
+		}
+	}
+	if !foundDLPBlock {
+		t.Fatalf("DLP block audit event not found: %#v", sink.Events())
+	}
 	denyEngine, err := policy.New([]policy.Rule{{ID: "default-deny", Decision: policy.Deny}})
 	if err != nil {
 		t.Fatal(err)
@@ -81,8 +97,14 @@ func TestProxyRelaysDiscoveryAndToolCalls(t *testing.T) {
 	if err == nil || denied != nil {
 		t.Fatalf("denied CallTool() = %#v, %v", denied, err)
 	}
-	if events := sink.Events(); len(events) != 2 || events[1].Outcome != "policy_denied" {
-		t.Fatalf("audit events = %#v", events)
+	foundPolicyDeny := false
+	for _, event := range sink.Events() {
+		if event.Outcome == "policy_denied" {
+			foundPolicyDeny = true
+		}
+	}
+	if !foundPolicyDeny {
+		t.Fatalf("policy denial audit event not found: %#v", sink.Events())
 	}
 }
 
