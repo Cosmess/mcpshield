@@ -41,6 +41,7 @@ func TestAuthenticateValidTokenAndRejectsWrongIssuer(t *testing.T) {
 	}
 	request := httptest.NewRequest(http.MethodGet, "/mcp/mock", nil)
 	request.Header.Set("Authorization", "Bearer "+raw)
+	request.Header.Set("X-Subject", "spoofed-user")
 	principal, err := validator.Authenticate(context.Background(), request)
 	if err != nil || principal.Subject != "user-1" || principal.TenantID != "tenant-1" {
 		t.Fatalf("Authenticate() = %#v, %v", principal, err)
@@ -52,6 +53,30 @@ func TestAuthenticateValidTokenAndRejectsWrongIssuer(t *testing.T) {
 	request.Header.Set("Authorization", "Bearer "+wrongRaw)
 	if _, err := validator.Authenticate(context.Background(), request); err == nil || strings.Contains(err.Error(), wrongRaw) {
 		t.Fatalf("wrong issuer error = %v", err)
+	}
+
+	for name, claims := range map[string]jwt.MapClaims{
+		"expired":        {"iss": "https://issuer.example", "aud": "mcpshield", "exp": time.Now().Add(-time.Minute).Unix()},
+		"wrong audience": {"iss": "https://issuer.example", "aud": "other", "exp": time.Now().Add(time.Minute).Unix()},
+	} {
+		candidate := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+		candidate.Header["kid"] = "key-1"
+		candidateRaw, signErr := candidate.SignedString(privateKey)
+		if signErr != nil {
+			t.Fatalf("%s SignedString() error = %v", name, signErr)
+		}
+		request.Header.Set("Authorization", "Bearer "+candidateRaw)
+		if _, authErr := validator.Authenticate(context.Background(), request); authErr == nil {
+			t.Errorf("%s token accepted", name)
+		}
+	}
+
+	unknownKey := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{"iss": "https://issuer.example", "aud": "mcpshield", "exp": time.Now().Add(time.Minute).Unix()})
+	unknownKey.Header["kid"] = "missing"
+	unknownRaw, _ := unknownKey.SignedString(privateKey)
+	request.Header.Set("Authorization", "Bearer "+unknownRaw)
+	if _, err := validator.Authenticate(context.Background(), request); err == nil {
+		t.Fatal("unknown key token accepted")
 	}
 }
 
