@@ -10,7 +10,9 @@
 
 ## Handoff
 
-- Current phase: M4 implementation in progress.
+- Current phase: M4 risk core merged via PR #21.
 - Active work: integrate risk with policy/proxy and add audit/metrics.
-- Next action: close M4 verification gaps before merge.
+- Next action: implement policy/proxy integration plus audit/metrics.
+- Current status: PASS WITH GAPS.
+- Merge commit: `ea46e11b92dead58544ebf127104d3df2c62c731`.
 - Known blockers: GitHub status checks and branch protection are not configured yet.

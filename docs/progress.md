@@ -5,10 +5,10 @@
 | Field | Value |
 | --- | --- |
 | Phase | M4 deterministic risk engine |
-| Status | M4 implementation in progress |
-| Active branch | `feature/m4-risk-engine-implementation` |
-| Last merged PR | #20 `docs: specify M4 deterministic risk engine` |
-| Last verified commit | `6398ed0` |
+| Status | PASS WITH GAPS |
+| Active branch | `docs/m4-risk-core-checkpoint` |
+| Last merged PR | #21 `feat: add M4 deterministic risk core` |
+| Last verified commit | `ea46e11b92dead58544ebf127104d3df2c62c731` |
 | Next vertical slice | Integrate risk with policy/proxy and add audit/metrics |
 
 ## Completed
@@ -38,12 +38,12 @@
 - Gateway startup loads `MCP_SHIELD_POLICY_FILE` and attaches the compiled engine to the proxy.
 - M4 deterministic risk engine specification, design, and tasks prepared.
 - M4 T1-T3 risk core implemented and verified.
-- M4 verification is `PASS WITH GAPS`; policy/proxy integration remains.
+- M4 risk core merged via PR #21 with merge commit `ea46e11b92dead58544ebf127104d3df2c62c731`.
+- M4 verification is `PASS WITH GAPS`; policy/proxy integration and audit/metrics remain.
 
 ## In progress
 
 - Complete M4 policy/proxy integration and audit/metrics.
-- Merge the M4 implementation PR.
 
 ## Not started
 
@@ -54,6 +54,8 @@
 
 M0 is `PASS`. M1 is `PASS WITH RESIDUAL RISKS`; M1 risks are documented in
 `.specs/features/m1-mcp-proxy/verification.md`.
+M4 risk core is `PASS WITH GAPS`; policy/proxy integration and audit/metrics are
+the next work.
 
 ## Latest merge
 
@@ -63,7 +65,8 @@ the M0 verification gaps, PR #6 closed the M0 progress checkpoint, PR #7 merged 
 M1 specification, PR #8 merged the M1 implementation, PR #9 recorded the M1 checkpoint,
 PR #11 merged the M2 JWT authentication foundation, PR #16 merged M3 enforcement,
 PR #18 merged policy loading/simulation, and PR #19 merged M3 startup wiring. CI is defined in
-`.github/workflows/ci.yml`; required status checks and branch protection remain part of
+PR #21 merged the M4 risk core with commit
+`ea46e11b92dead58544ebf127104d3df2c62c731`. CI is defined in
 the repository operating model.
 
 ## Working agreement
