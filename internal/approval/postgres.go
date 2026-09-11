@@ -55,7 +55,27 @@ func (repository *PostgresRepository) Review(id string, status Status, reviewer 
 }
 
 func (repository *PostgresRepository) Consume(id, fingerprint string, now time.Time) (Record, error) {
-	return repository.scan(repository.pool.QueryRow(context.Background(), `UPDATE approval SET status='CONSUMED', consumed_at=$3 WHERE id=$1 AND fingerprint=$2 AND status='APPROVED' AND expires_at>$3 RETURNING id,status,subject,tenant_id,upstream_id,method,tool,arguments_hash,policy_ids,policy_decision,risk_score,risk_severity,risk_signals,fingerprint,created_at,expires_at,reviewer,decision_reason,reviewed_at,consumed_at`, id, fingerprint, now))
+	record, err := repository.scan(repository.pool.QueryRow(context.Background(), `UPDATE approval SET status='CONSUMED', consumed_at=$3 WHERE id=$1 AND fingerprint=$2 AND status='APPROVED' AND expires_at>$3 RETURNING id,status,subject,tenant_id,upstream_id,method,tool,arguments_hash,policy_ids,policy_decision,risk_score,risk_severity,risk_signals,fingerprint,created_at,expires_at,reviewer,decision_reason,reviewed_at,consumed_at`, id, fingerprint, now))
+	if err == nil {
+		return record, nil
+	}
+	if !errors.Is(err, ErrNotFound) {
+		return Record{}, err
+	}
+	current, lookupErr := repository.Get(id)
+	if lookupErr != nil {
+		return Record{}, lookupErr
+	}
+	if current.Status == Consumed {
+		return Record{}, ErrAlreadyConsumed
+	}
+	if !now.Before(current.ExpiresAt) {
+		return Record{}, ErrExpired
+	}
+	if current.Status != Approved {
+		return Record{}, ErrInvalidState
+	}
+	return Record{}, ErrFingerprint
 }
 
 type rowScanner interface{ Scan(...any) error }
