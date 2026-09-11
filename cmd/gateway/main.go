@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/Cosmess/mcpshield/internal/config"
 	"github.com/Cosmess/mcpshield/internal/httpapi"
@@ -53,12 +54,16 @@ func run(parent context.Context, logger *slog.Logger) error {
 		}
 		return fmt.Errorf("serve gateway: %w", err)
 	case <-ctx.Done():
-		shutdownContext, cancel := context.WithTimeout(context.Background(), config.ShutdownTimeout)
-		defer cancel()
 		logger.Info("gateway_shutdown")
-		if err := server.Shutdown(shutdownContext); err != nil {
+		if err := shutdownServer(server, config.ShutdownTimeout); err != nil {
 			return fmt.Errorf("shutdown gateway: %w", err)
 		}
 		return nil
 	}
+}
+
+func shutdownServer(server *http.Server, timeout time.Duration) error {
+	shutdownContext, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	return server.Shutdown(shutdownContext)
 }

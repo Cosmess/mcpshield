@@ -58,6 +58,10 @@ func (server *Server) instrument(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		started := time.Now()
 		server.requests.Add(1)
+		if request.ContentLength > server.maxBodyBytes {
+			writeJSON(writer, http.StatusRequestEntityTooLarge, map[string]string{"error": "request_body_too_large"})
+			return
+		}
 		request = request.WithContext(context.WithValue(request.Context(), bodyLimitKey{}, server.maxBodyBytes))
 		ctx, cancel := context.WithTimeout(request.Context(), server.requestTimeout)
 		defer cancel()

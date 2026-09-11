@@ -1,6 +1,9 @@
 package config
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestLoadDefaults(t *testing.T) {
 	for _, key := range []string{"MCP_SHIELD_HTTP_ADDR", "MCP_SHIELD_REQUEST_TIMEOUT", "MCP_SHIELD_SHUTDOWN_TIMEOUT", "MCP_SHIELD_MAX_BODY_BYTES"} {
@@ -16,9 +19,12 @@ func TestLoadDefaults(t *testing.T) {
 }
 
 func TestLoadRejectsInvalidDuration(t *testing.T) {
-	t.Setenv("MCP_SHIELD_REQUEST_TIMEOUT", "not-a-duration")
+	secretValue := "not-a-duration-secret-value"
+	t.Setenv("MCP_SHIELD_REQUEST_TIMEOUT", secretValue)
 	if _, err := Load(); err == nil {
 		t.Fatal("Load() error = nil, want invalid duration error")
+	} else if strings.Contains(err.Error(), secretValue) {
+		t.Fatalf("Load() error exposed configuration value: %v", err)
 	}
 }
 
