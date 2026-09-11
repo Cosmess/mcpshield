@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M0 bootstrap |
-| Status | Specification prepared; implementation not started |
-| Active branch | `feature/m0-bootstrap-spec` |
-| Last merged PR | #2 `docs: record bootstrap merge checkpoint` |
-| Last verified commit | `33ae595` |
-| Next vertical slice | Implement M0 tasks T1-T6 |
+| Status | M0 implementation in progress |
+| Active branch | `feature/m0-bootstrap-implementation` |
+| Last merged PR | #3 `docs: specify M0 bootstrap foundation` |
+| Last verified commit | `5b0659c` |
+| Next vertical slice | Close M0 verification gaps, then start M1 MCP reverse proxy |
 
 ## Completed
 
@@ -18,11 +18,13 @@
 - SDD and harness operating model defined.
 - Initial repository documentation structure prepared.
 - M0 specification, design, and task breakdown prepared under `.specs/features/m0-bootstrap/`.
+- M0 T1-T4 implementation and T6 local development surface added.
+- Full local gates pass: tests, race tests, vet, build, Compose config, and diff check.
 
 ## In progress
 
-- Review and merge the M0 specification branch.
-- Implement M0 tasks T1-T6 on a separate implementation branch.
+- Merge the current M0 implementation branch with its verification gaps documented.
+- Add body-limit, secret-redaction, and bounded-shutdown integration proofs.
 - Add CI gates before the first Go implementation is merged.
 
 ## Not started
@@ -33,6 +35,12 @@
 - PostgreSQL migrations and audit persistence.
 - MCP SDK integration and proxy flow.
 - Authentication, native policy engine, risk engine, DLP, approvals, Kafka, and AI.
+
+## Current verification
+
+M0 is `PASS WITH GAPS`. The remaining gaps are tracked in
+`.specs/features/m0-bootstrap/verification.md`; no claim of full M0 completion is made
+until those integration proofs pass.
 
 ## Latest merge
 

@@ -36,6 +36,22 @@ O fluxo detalhado esta em [docs/engineering-workflow.md](docs/engineering-workfl
 - [Decisoes arquiteturais](docs/adr/)
 - [Contribuicao](CONTRIBUTING.md)
 
+## Desenvolvimento local
+
+Requisitos: Go 1.27.x. O bootstrap atual nao exige banco de dados, credenciais cloud ou
+chave de provedor de IA.
+
+```bash
+go run ./cmd/gateway
+go test ./...
+go test -race ./...
+go vet ./...
+docker compose config
+```
+
+Com o gateway em execucao, consulte `http://127.0.0.1:8080/health/live`,
+`http://127.0.0.1:8080/health/ready` e `http://127.0.0.1:8080/metrics`.
+
 ## Licenca
 
 A licenca sera definida antes da primeira distribuicao publica do codigo.
