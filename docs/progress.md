@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M2 authentication and identity |
-| Status | M2 implementation in progress |
-| Active branch | `feature/m2-authentication-implementation` |
-| Last merged PR | #10 `docs: specify M2 authentication and add CI` |
-| Last verified commit | `8e97b82` |
-| Next vertical slice | Close M2 verification gaps, then begin M3 policy engine |
+| Status | M2 foundation merged with verification gaps |
+| Active branch | `main` |
+| Last merged PR | #11 `feat: add M2 JWT authentication foundation` |
+| Last verified commit | `7693fb8` |
+| Next vertical slice | Close M2 auth gaps, then begin M3 policy engine |
 
 ## Completed
 
@@ -27,12 +27,14 @@
 - PR #8 merged the SDK-backed proxy implementation and all current M1 gates passed.
 - M2 T1-T4 implementation added: configuration, principal, JWKS, JWT validation, and HTTP integration.
 - M2 verification is `PASS WITH GAPS`; see `.specs/features/m2-authentication/verification.md`.
+- PR #11 merged the M2 JWT authentication foundation with all CI gates passing.
 
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
 - Complete auth audit/metrics and JWKS test gaps.
 - Merge the M2 implementation PR.
+- Add authentication audit/metrics, JWKS edge-case tests, and spoofed-header coverage.
 
 ## Not started
 

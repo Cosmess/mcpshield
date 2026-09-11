@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: M2 implementation in progress.
-- Active work: close authentication verification gaps and prepare the implementation PR.
-- Next action: add auth observability and JWKS edge-case tests before merge.
+- Current phase: M2 foundation merged with verification gaps.
+- Active work: close authentication observability and JWKS verification gaps.
+- Next action: add auth audit/metrics and edge-case tests before starting M3 policy work.
 - Known blockers: GitHub status checks and branch protection are not configured yet.
