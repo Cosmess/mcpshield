@@ -10,9 +10,9 @@
 
 ## Handoff
 
-- Current phase: M7 specification in progress.
-- Active work: review the OPA/Rego adapter requirements, design, and tasks.
-- Next action: validate and merge the M7 specification before implementation.
+- Current phase: M7 implementation in progress.
+- Active work: integrate evaluator selection, fallback, audit, and simulation.
+- Next action: close M7 verification gaps before merge.
 - Current status: PASS WITH RESIDUAL RISKS.
 - Completed: request/response inspection, sanitized DLP audit metadata, and fixed DLP inspection/block/redaction counters.
 - Merge commit: `ff01f54` (PR #28).

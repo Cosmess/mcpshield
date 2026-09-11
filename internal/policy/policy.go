@@ -64,6 +64,21 @@ type Result struct {
 
 type Engine struct{ rules []Rule }
 
+type Evaluator interface {
+	Evaluate(Input) (Result, error)
+}
+
+type NativeEvaluator struct{ engine *Engine }
+
+func NewNativeEvaluator(engine *Engine) NativeEvaluator { return NativeEvaluator{engine: engine} }
+
+func (evaluator NativeEvaluator) Evaluate(input Input) (Result, error) {
+	if evaluator.engine == nil {
+		return Result{}, fmt.Errorf("native policy engine is not configured")
+	}
+	return evaluator.engine.Evaluate(input), nil
+}
+
 type document struct {
 	Policies []Rule `json:"policies"`
 }
