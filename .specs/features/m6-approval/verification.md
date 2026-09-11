@@ -4,10 +4,10 @@
 
 `PASS WITH GAPS`
 
-M6 T1-T5 are implemented: approval state domain, policy-bound fingerprinting, reviewer
+M6 T1-T6 are implemented: approval state domain, policy-bound fingerprinting, reviewer
 authorization, expiry, denial, in-memory repository, atomic one-time consumption, proxy
-consumption through bound approval headers, authenticated reviewer HTTP routes, and fixed
-lifecycle metrics.
+consumption through bound approval headers, authenticated reviewer HTTP routes, fixed
+lifecycle metrics, optional PostgreSQL-backed persistence, and an atomic conditional consume.
 
 ## Acceptance criteria evidence
 
@@ -21,7 +21,7 @@ lifecycle metrics.
 | M6-AC6 | Atomic in-memory consume with concurrent one-success test | PASS |
 | M6-AC7 | Proxy creates PENDING without headers and consumes only a matching approved fingerprint | PASS |
 | M6-AC8 | No AI approval transition exists; reviewer routes require authenticated reviewer context | PASS |
-| M6-AC9 | State transition and race tests pass for the in-memory repository | PASS WITH GAP |
+| M6-AC9 | State transition and race tests pass; PostgreSQL consume uses conditional update | PASS WITH GAP |
 
 ## Executed focused gates
 
@@ -34,13 +34,11 @@ go vet ./internal/approval  PASS
 
 ## Remaining work
 
-- Add HTTP reviewer operations and lifecycle metrics.
-- Add approval lifecycle audit events and fixed-status metrics.
-- Replace in-memory repository with PostgreSQL-backed authoritative storage.
-- Run full repository gates before the implementation PR.
+- Add PostgreSQL Testcontainer integration coverage for migration and repository transitions.
+- Run the database-backed full repository gates before the implementation PR.
 
 ## Residual risks
 
-The current repository is process-local and loses approval state on restart. PostgreSQL,
-transactional consumption, operational reviewer provisioning, and durable audit are required
-before production use.
+PostgreSQL persistence is available when `MCP_SHIELD_DATABASE_URL` is configured, but
+Testcontainer coverage, production secret management, connection pool sizing, and durable
+audit storage remain before production use.
