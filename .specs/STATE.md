@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: M4 specification in progress.
-- Active work: review the deterministic risk engine requirements, design, and tasks.
-- Next action: validate and merge the M4 specification before implementation.
+- Current phase: M4 implementation in progress.
+- Active work: integrate risk with policy/proxy and add audit/metrics.
+- Next action: close M4 verification gaps before merge.
 - Known blockers: GitHub status checks and branch protection are not configured yet.
