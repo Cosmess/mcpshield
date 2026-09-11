@@ -2,12 +2,11 @@
 
 ## Verdict
 
-`PASS WITH GAPS`
+`PASS`
 
 The current implementation establishes the Go module, gateway entry point, typed
 configuration, structured request logging, health endpoints, metrics, timeouts, and local
-development commands. M0 is not complete until the request-boundary and graceful-shutdown
-integration proofs below are added.
+development commands. The M0 acceptance criteria are covered by the evidence below.
 
 ## Acceptance criteria evidence
 
@@ -18,9 +17,9 @@ integration proofs below are added.
 | M0-AC3 | `internal/httpapi/server_test.go` exercises `/health/live` | PASS |
 | M0-AC4 | `internal/httpapi/server_test.go` exercises ready and not-ready states | PASS |
 | M0-AC5 | `internal/httpapi/server_test.go` asserts Prometheus metric output | PASS |
-| M0-AC6 | Structured `slog` request event is wired; secret-redaction test remains needed | PASS WITH GAP |
-| M0-AC7 | Server timeout and `MaxBytesReader` are wired; body-consuming endpoint test remains needed | PASS WITH GAP |
-| M0-AC8 | Signal shutdown path is wired; bounded in-flight shutdown integration test remains needed | PASS WITH GAP |
+| M0-AC6 | Structured `slog` request event is wired; invalid configuration values are excluded from errors | PASS |
+| M0-AC7 | Oversized `Content-Length` requests are rejected with 413; `MaxBytesReader` remains applied to consumed bodies | PASS |
+| M0-AC8 | `cmd/gateway/main_test.go` proves an in-flight request is bounded by the shutdown deadline | PASS |
 | M0-AC9 | README, Makefile, Dockerfile, Compose, and all documented gates are present | PASS |
 
 ## Executed gates
@@ -35,10 +34,9 @@ docker compose config      PASS
 git diff --check            PASS
 ```
 
-## Remaining work
+## Residual risk
 
-- Add a focused handler or integration fixture that consumes a request body and proves the
-  configured maximum body size is enforced.
-- Add a blocked in-flight request test that sends SIGTERM/SIGINT and proves shutdown is
-  bounded by the configured deadline.
-- Add secret-safe log assertions for configuration failures and request events.
+- The shutdown helper is covered with an in-flight request, while the OS signal delivery
+  path remains exercised indirectly through `signal.NotifyContext` in the process entry point.
+- Secret-bearing configuration fields do not exist in M0 yet; current tests prove invalid
+  values are not echoed and request bodies are not logged.

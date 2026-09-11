@@ -39,3 +39,14 @@ func TestMetricsEndpoint(t *testing.T) {
 		t.Fatalf("metrics response = %d %q", recorder.Code, recorder.Body.String())
 	}
 }
+
+func TestRejectsOversizedRequestBody(t *testing.T) {
+	server := newTestServer()
+	body := strings.NewReader(strings.Repeat("x", 17))
+	request := httptest.NewRequest(http.MethodPost, "/health/live", body)
+	recorder := httptest.NewRecorder()
+	server.Handler().ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusRequestEntityTooLarge {
+		t.Fatalf("oversized body status = %d, want %d", recorder.Code, http.StatusRequestEntityTooLarge)
+	}
+}

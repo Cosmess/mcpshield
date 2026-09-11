@@ -61,7 +61,7 @@ func durationEnv(key string, fallback time.Duration) (time.Duration, error) {
 	}
 	parsed, err := time.ParseDuration(value)
 	if err != nil {
-		return 0, fmt.Errorf("%s must be a duration: %w", key, err)
+		return 0, fmt.Errorf("%s must be a valid duration", key)
 	}
 	return parsed, nil
 }
@@ -73,7 +73,7 @@ func int64Env(key string, fallback int64) (int64, error) {
 	}
 	parsed, err := strconv.ParseInt(value, 10, 64)
 	if err != nil {
-		return 0, fmt.Errorf("%s must be an integer: %w", key, err)
+		return 0, fmt.Errorf("%s must be a valid integer", key)
 	}
 	return parsed, nil
 }
