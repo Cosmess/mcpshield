@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M0 bootstrap |
-| Status | M0 complete |
-| Active branch | `main` |
-| Last merged PR | #5 `test: close M0 verification gaps` |
-| Last verified commit | `6cde428` |
-| Next vertical slice | M1: remote MCP reverse proxy |
+| Status | M1 specification in progress |
+| Active branch | `feature/m1-mcp-proxy-spec` |
+| Last merged PR | #6 `docs: close M0 progress checkpoint` |
+| Last verified commit | `458e38d` |
+| Next vertical slice | Review/merge M1 specification, then implement T1-T6 |
 
 ## Completed
 
@@ -21,11 +21,13 @@
 - M0 T1-T4 implementation and T6 local development surface added.
 - Full local gates pass: tests, race tests, vet, build, Compose config, and diff check.
 - Corrective tests cover oversized requests, bounded in-flight shutdown, and safe config errors.
+- M1 specification, design, and task breakdown prepared under `.specs/features/m1-mcp-proxy/`.
 
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
 - Specify M1 remote MCP reverse proxy requirements and protocol baseline.
+- Complete M1 specification review and merge before implementation.
 
 ## Not started
 

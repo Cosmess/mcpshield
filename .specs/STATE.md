@@ -11,6 +11,6 @@
 ## Handoff
 
 - Current phase: M0 complete.
-- Active work: prepare the M1 remote MCP reverse proxy specification.
-- Next action: define the MCP 2026-07-28 transport boundary and mock-upstream acceptance tests.
+- Active work: M1 specification review and merge of the remote MCP reverse proxy design.
+- Next action: implement M1 T1-T6 after the specification PR is merged.
 - Known blockers: GitHub status checks and branch protection are not configured yet.
