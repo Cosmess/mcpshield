@@ -16,6 +16,7 @@ type Server struct {
 	maxBodyBytes   int64
 	ready          atomic.Bool
 	requests       atomic.Uint64
+	mcpHandler     http.Handler
 }
 
 func New(logger *slog.Logger, requestTimeout time.Duration, maxBodyBytes int64) *Server {
@@ -29,7 +30,18 @@ func (server *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /health/live", server.live)
 	mux.HandleFunc("GET /health/ready", server.readyHandler)
 	mux.HandleFunc("GET /metrics", server.metrics)
+	mux.Handle("/mcp/", http.HandlerFunc(server.mcp))
 	return server.instrument(mux)
+}
+
+func (server *Server) SetMCPHandler(handler http.Handler) { server.mcpHandler = handler }
+
+func (server *Server) mcp(writer http.ResponseWriter, request *http.Request) {
+	if server.mcpHandler == nil {
+		writeJSON(writer, http.StatusNotFound, map[string]string{"error": "mcp_upstream_not_configured"})
+		return
+	}
+	server.mcpHandler.ServeHTTP(writer, request)
 }
 
 func (server *Server) SetReady(ready bool) { server.ready.Store(ready) }
