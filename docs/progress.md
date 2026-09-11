@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M7 OPA/Rego adapter |
-| Status | M7 specification in progress |
-| Active branch | `feature/m7-opa-adapter-spec` |
-| Last merged PR | #37 `test: verify M6 PostgreSQL approval persistence` |
-| Last verified commit | `279047c` |
-| Next vertical slice | Review/merge M7 specification, then implement T1-T6 |
+| Status | M7 implementation in progress |
+| Active branch | `feature/m7-opa-adapter-implementation` |
+| Last merged PR | #38 `docs: specify M7 OPA Rego adapter` |
+| Last verified commit | `4542b74` |
+| Next vertical slice | Integrate evaluator selection/fallback and OPA simulation |
 
 ## Completed
 
@@ -55,10 +55,13 @@
 - M6 PostgreSQL repository, migration, optional startup wiring, and atomic consume are implemented.
 - M6 Testcontainers PostgreSQL tests verify migration, lifecycle, replay rejection, and one-success concurrent consume.
 - M7 OPA/Rego adapter specification, design, and tasks prepared.
+- M7 T1-T3 evaluator contract, sanitized input, strict output mapping, and OPA client implemented.
+- M7 verification is `PASS WITH GAPS`; evaluator selection, fallback, audit, and simulation remain.
 
 ## In progress
 
-- Review and merge the M7 specification before implementation.
+- Complete M7 evaluator selection, fallback, audit, and simulation.
+- Merge the M7 implementation PR.
 
 ## Not started
 
