@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: M2 specification in progress.
-- Active work: review the authentication and identity requirements, design, and task breakdown.
-- Next action: validate and merge the M2 specification before implementation.
+- Current phase: M2 implementation in progress.
+- Active work: close authentication verification gaps and prepare the implementation PR.
+- Next action: add auth observability and JWKS edge-case tests before merge.
 - Known blockers: GitHub status checks and branch protection are not configured yet.

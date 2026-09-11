@@ -8,7 +8,13 @@ import (
 	"strconv"
 	"sync/atomic"
 	"time"
+
+	"github.com/Cosmess/mcpshield/internal/identity"
 )
+
+type Authenticator interface {
+	Authenticate(context.Context, *http.Request) (identity.Principal, error)
+}
 
 type Server struct {
 	logger         *slog.Logger
@@ -17,6 +23,7 @@ type Server struct {
 	ready          atomic.Bool
 	requests       atomic.Uint64
 	mcpHandler     http.Handler
+	authenticator  Authenticator
 }
 
 func New(logger *slog.Logger, requestTimeout time.Duration, maxBodyBytes int64) *Server {
@@ -36,11 +43,25 @@ func (server *Server) Handler() http.Handler {
 
 func (server *Server) SetMCPHandler(handler http.Handler) { server.mcpHandler = handler }
 
+func (server *Server) SetAuthenticator(authenticator Authenticator) {
+	server.authenticator = authenticator
+}
+
 func (server *Server) mcp(writer http.ResponseWriter, request *http.Request) {
 	if server.mcpHandler == nil {
 		writeJSON(writer, http.StatusNotFound, map[string]string{"error": "mcp_upstream_not_configured"})
 		return
 	}
+	if server.authenticator == nil {
+		writeJSON(writer, http.StatusUnauthorized, map[string]string{"error": "authentication_required"})
+		return
+	}
+	principal, err := server.authenticator.Authenticate(request.Context(), request)
+	if err != nil {
+		writeJSON(writer, http.StatusUnauthorized, map[string]string{"error": "authentication_failed"})
+		return
+	}
+	request = request.WithContext(identity.WithPrincipal(request.Context(), principal))
 	server.mcpHandler.ServeHTTP(writer, request)
 }
 

@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M2 authentication and identity |
-| Status | M2 specification in progress |
-| Active branch | `feature/m2-authentication-spec` |
-| Last merged PR | #9 `docs: close M1 progress checkpoint` |
-| Last verified commit | `bb69c3a` |
-| Next vertical slice | Review/merge M2 specification, then implement T1-T6 |
+| Status | M2 implementation in progress |
+| Active branch | `feature/m2-authentication-implementation` |
+| Last merged PR | #10 `docs: specify M2 authentication and add CI` |
+| Last verified commit | `8e97b82` |
+| Next vertical slice | Close M2 verification gaps, then begin M3 policy engine |
 
 ## Completed
 
@@ -25,12 +25,14 @@
 - M1 SDK-backed proxy, trusted registry, audit sink, and integration tests implemented.
 - M1 local verification is `PASS WITH RESIDUAL RISKS`; see the feature verification report.
 - PR #8 merged the SDK-backed proxy implementation and all current M1 gates passed.
+- M2 T1-T4 implementation added: configuration, principal, JWKS, JWT validation, and HTTP integration.
+- M2 verification is `PASS WITH GAPS`; see `.specs/features/m2-authentication/verification.md`.
 
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
-- Review and merge the M2 specification before implementation.
-- M2 authentication and identity specification, design, and tasks prepared.
+- Complete auth audit/metrics and JWKS test gaps.
+- Merge the M2 implementation PR.
 
 ## Not started
 
