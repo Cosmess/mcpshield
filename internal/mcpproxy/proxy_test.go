@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Cosmess/mcpshield/internal/approval"
 	"github.com/Cosmess/mcpshield/internal/audit"
 	"github.com/Cosmess/mcpshield/internal/policy"
 	"github.com/Cosmess/mcpshield/internal/upstream"
@@ -108,6 +109,26 @@ func TestProxyRelaysDiscoveryAndToolCalls(t *testing.T) {
 	}
 	if !foundPolicyDeny {
 		t.Fatalf("policy denial audit event not found: %#v", sink.Events())
+	}
+	approvalService := approval.NewService(approval.NewMemoryRepository())
+	proxy.SetApprovalService(approvalService)
+	approvalEngine, err := policy.New([]policy.Rule{{ID: "merge-review", Decision: policy.RequireApproval, ToolPattern: "greet"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	proxy.SetPolicy(approvalEngine)
+	approvalResult, approvalErr := session.CallTool(context.Background(), &mcp.CallToolParams{Name: "greet", Arguments: map[string]any{"name": "approval"}})
+	if approvalErr == nil && (approvalResult == nil || !approvalResult.IsError) {
+		t.Fatalf("approval call executed: %#v", approvalResult)
+	}
+	foundApproval := false
+	for _, event := range sink.Events() {
+		if event.Outcome == "approval_required" {
+			foundApproval = true
+		}
+	}
+	if !foundApproval {
+		t.Fatalf("approval audit event not found: %#v", sink.Events())
 	}
 	proxy.SetPolicy(nil)
 	responseBlocked, responseErr := session.CallTool(context.Background(), &mcp.CallToolParams{Name: "greet", Arguments: map[string]any{"name": "secret"}})

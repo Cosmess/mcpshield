@@ -11,6 +11,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/Cosmess/mcpshield/internal/approval"
 	"github.com/Cosmess/mcpshield/internal/audit"
 	"github.com/Cosmess/mcpshield/internal/dlp"
 	"github.com/Cosmess/mcpshield/internal/identity"
@@ -29,6 +30,7 @@ type Proxy struct {
 	sessions        map[string]*mcp.ClientSession
 	mu              sync.RWMutex
 	policy          *policy.Engine
+	approvalService *approval.Service
 	riskEvaluations atomic.Uint64
 	riskHigh        atomic.Uint64
 	riskCritical    atomic.Uint64
@@ -37,7 +39,8 @@ type Proxy struct {
 	dlpRedactions   atomic.Uint64
 }
 
-func (proxy *Proxy) SetPolicy(engine *policy.Engine) { proxy.policy = engine }
+func (proxy *Proxy) SetPolicy(engine *policy.Engine)              { proxy.policy = engine }
+func (proxy *Proxy) SetApprovalService(service *approval.Service) { proxy.approvalService = service }
 
 func New(ctx context.Context, registry *upstream.Registry, logger *slog.Logger, sink audit.Sink) (*Proxy, error) {
 	proxy := &Proxy{logger: logger, audit: sink, servers: make(map[string]*mcp.StreamableHTTPHandler), sessions: make(map[string]*mcp.ClientSession)}
@@ -164,6 +167,21 @@ func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.Cli
 				}
 			}
 			result := proxy.policy.Evaluate(policy.Input{Principal: principal, UpstreamID: definition.ID, Method: "tools/call", Tool: toolName, Operation: operation, Arguments: argumentsMap, Risk: &riskResult})
+			if result.Decision == policy.RequireApproval {
+				if proxy.approvalService == nil {
+					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("approval service is not configured")
+				}
+				request := approval.Request{Principal: principal, UpstreamID: definition.ID, Method: "tools/call", Tool: toolName, Arguments: argumentsMap, PolicyIDs: result.MatchedIDs, Decision: result.Decision, Risk: riskResult, ExpiresAt: time.Now().Add(5 * time.Minute)}
+				_, fingerprint, fingerprintErr := approval.Fingerprint(request)
+				if fingerprintErr != nil {
+					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("fingerprint approval request: %w", fingerprintErr)
+				}
+				if _, createErr := proxy.approvalService.CreatePending(request, fingerprint[:16]); createErr != nil {
+					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("create approval: %w", createErr)
+				}
+				proxy.audit.Record(riskEvent(ctx, definition.ID, "approval_required", riskResult, time.Since(started)))
+				return &mcp.CallToolResult{IsError: true}, fmt.Errorf("human approval required")
+			}
 			if result.Decision == policy.Deny {
 				proxy.audit.Record(riskEvent(ctx, definition.ID, "policy_denied", riskResult, time.Since(started)))
 				return &mcp.CallToolResult{IsError: true}, fmt.Errorf("policy denied: %s", result.Reason)
