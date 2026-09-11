@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: project bootstrap complete.
-- Active work: prepare the M0 feature specification.
-- Next action: create the M0 SDD artifacts on a focused branch and add the first Go module slice.
+- Current phase: M0 specification prepared.
+- Active work: review and merge the M0 SDD artifacts, then implement T1-T6.
+- Next action: open the M0 specification Pull Request and wait for review/merge before implementation.
 - Known blockers: GitHub status checks and branch protection are not configured yet.

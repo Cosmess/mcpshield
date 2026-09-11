@@ -4,12 +4,12 @@
 
 | Field | Value |
 | --- | --- |
-| Phase | Project bootstrap |
-| Status | Bootstrap merged |
-| Active branch | `main` |
-| Last merged PR | #1 `chore: establish project documentation harness` |
-| Last verified commit | `2bd9655` |
-| Next vertical slice | M0: Go module, configuration, health, logging, persistence foundation |
+| Phase | M0 bootstrap |
+| Status | Specification prepared; implementation not started |
+| Active branch | `feature/m0-bootstrap-spec` |
+| Last merged PR | #2 `docs: record bootstrap merge checkpoint` |
+| Last verified commit | `33ae595` |
+| Next vertical slice | Implement M0 tasks T1-T6 |
 
 ## Completed
 
@@ -17,11 +17,12 @@
 - Project direction recorded in the portfolio specification.
 - SDD and harness operating model defined.
 - Initial repository documentation structure prepared.
+- M0 specification, design, and task breakdown prepared under `.specs/features/m0-bootstrap/`.
 
 ## In progress
 
-- Define the first M0 feature specification.
-- Confirm the first implementation branch and feature-level SDD artifacts.
+- Review and merge the M0 specification branch.
+- Implement M0 tasks T1-T6 on a separate implementation branch.
 - Add CI gates before the first Go implementation is merged.
 
 ## Not started
@@ -35,9 +36,9 @@
 
 ## Latest merge
 
-PR #1 merged the initial documentation and agent harness into `main`. No GitHub status
-checks were configured for this documentation-only bootstrap. Local validation passed for
-whitespace, referenced paths, and non-empty Markdown artifacts.
+PR #1 merged the initial documentation and agent harness into `main`, and PR #2 recorded
+that checkpoint. No GitHub status checks are configured yet. The M0 specification branch
+contains no Go implementation; it defines the obligations and proof plan for the next slice.
 
 ## Working agreement
 
