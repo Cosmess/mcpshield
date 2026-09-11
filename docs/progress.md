@@ -5,10 +5,10 @@
 | Field | Value |
 | --- | --- |
 | Phase | Project bootstrap |
-| Status | In progress |
-| Active branch | `chore/bootstrap-project-harness` |
-| Last merged PR | None |
-| Last verified commit | Initial harness bootstrap pending verification |
+| Status | Bootstrap merged |
+| Active branch | `main` |
+| Last merged PR | #1 `chore: establish project documentation harness` |
+| Last verified commit | `2bd9655` |
 | Next vertical slice | M0: Go module, configuration, health, logging, persistence foundation |
 
 ## Completed
@@ -20,9 +20,9 @@
 
 ## In progress
 
-- Merge the initial documentation and harness bootstrap through a Pull Request.
-- Confirm GitHub branch protection, PR creation, and merge permissions.
-- Define the first M0 feature specification after the bootstrap is merged.
+- Define the first M0 feature specification.
+- Confirm the first implementation branch and feature-level SDD artifacts.
+- Add CI gates before the first Go implementation is merged.
 
 ## Not started
 
@@ -32,6 +32,12 @@
 - PostgreSQL migrations and audit persistence.
 - MCP SDK integration and proxy flow.
 - Authentication, native policy engine, risk engine, DLP, approvals, Kafka, and AI.
+
+## Latest merge
+
+PR #1 merged the initial documentation and agent harness into `main`. No GitHub status
+checks were configured for this documentation-only bootstrap. Local validation passed for
+whitespace, referenced paths, and non-empty Markdown artifacts.
 
 ## Working agreement
 
