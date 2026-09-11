@@ -8,6 +8,10 @@ M5 is implemented through request/response inspection, bounded deterministic sec
 metadata-only matches, structural redaction, proxy blocking before upstream dispatch, and
 fixed DLP metrics.
 
+Completion checkpoint: PR #28 merged with commit `ff01f54`. Request and response inspection,
+sanitized DLP audit metadata, and fixed inspection/block/redaction counters are complete.
+M6 human approval is the next step.
+
 ## Acceptance criteria evidence
 
 | Criterion | Evidence | Result |

@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M5 DLP and secret detection |
-| Status | M5 complete with residual risks; PR pending |
-| Active branch | `fix/m5-dlp-response-metrics` |
-| Last merged PR | #27 `feat: add M5 DLP request inspection` |
-| Last verified commit | `97a3020` |
-| Next vertical slice | Merge M5 response/metrics fix, then begin M6 human approval |
+| Status | M5 PASS WITH RESIDUAL RISKS |
+| Active branch | `docs/m5-completion-checkpoint` |
+| Last merged PR | #28 `fix: inspect text MCP responses for DLP` |
+| Last verified commit | `ff01f54` |
+| Next vertical slice | M6 human approval |
 
 ## Completed
 
@@ -44,12 +44,12 @@
 - M4 verification is `PASS WITH RESIDUAL RISKS`; residual risks and deferred work remain documented in the verification report.
 - M5 DLP and secret detection specification, design, and tasks prepared.
 - M5 T1-T4 DLP core and request-side proxy integration implemented.
-- M5 verification is `PASS WITH RESIDUAL RISKS`; request/response inspection and DLP metrics are implemented.
+- M5 verification is `PASS WITH RESIDUAL RISKS`; request/response inspection, sanitized DLP audit metadata, and fixed inspection/block/redaction counters are implemented.
+- PR #28 merged the M5 response inspection and metrics fix with merge commit `ff01f54`.
 
 ## In progress
 
-- Merge the M5 response/metrics fix.
-- Begin M6 human approval specification.
+- M6 human approval requires human approval before implementation begins.
 
 ## Not started
 
@@ -61,7 +61,9 @@
 M0 is `PASS`. M1 is `PASS WITH RESIDUAL RISKS`; M1 risks are documented in
 `.specs/features/m1-mcp-proxy/verification.md`.
 M4 is `PASS WITH RESIDUAL RISKS`; policy/proxy integration, sanitized audit metadata,
-and fixed risk metrics are complete. M5 DLP and secret detection is the next work.
+and fixed risk metrics are complete. M5 is `PASS WITH RESIDUAL RISKS`; request/response
+inspection, sanitized DLP audit metadata, and fixed counters are complete. M6 human
+approval is next.
 
 ## Latest merge
 
@@ -73,8 +75,9 @@ PR #11 merged the M2 JWT authentication foundation, PR #16 merged M3 enforcement
 PR #18 merged policy loading/simulation, and PR #19 merged M3 startup wiring. CI is defined in
 PR #21 merged the M4 risk core with commit
 `ea46e11b92dead58544ebf127104d3df2c62c731`, PR #23 merged the M4 integration
-with commit `a1d34a6`, and PR #24 closed this documentation checkpoint. CI is defined in
-the repository operating model.
+with commit `a1d34a6`, PR #24 closed the M4 documentation checkpoint, and PR #28 merged
+the M5 response/metrics fix with commit `ff01f54`. CI is defined in the repository
+operating model.
 
 ## Working agreement
 
