@@ -55,7 +55,11 @@ func New(ctx context.Context, registry *upstream.Registry, logger *slog.Logger, 
 
 func (proxy *Proxy) Handler() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		request = request.WithContext(context.WithValue(request.Context(), requestIDKey{}, requestID(request)))
+		requestContext := request.Context()
+		requestContext = context.WithValue(requestContext, requestIDKey{}, requestID(request))
+		requestContext = context.WithValue(requestContext, approvalIDKey{}, request.Header.Get("X-MCPShield-Approval-ID"))
+		requestContext = context.WithValue(requestContext, approvalFingerprintKey{}, request.Header.Get("X-MCPShield-Approval-Fingerprint"))
+		request = request.WithContext(requestContext)
 		prefix := "/mcp/"
 		if !strings.HasPrefix(request.URL.Path, prefix) {
 			http.NotFound(writer, request)
@@ -176,11 +180,20 @@ func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.Cli
 				if fingerprintErr != nil {
 					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("fingerprint approval request: %w", fingerprintErr)
 				}
-				if _, createErr := proxy.approvalService.CreatePending(request, fingerprint[:16]); createErr != nil {
+				approvalID := approvalIDFromContext(ctx)
+				approvalFingerprint := approvalFingerprintFromContext(ctx)
+				if approvalID != "" && approvalFingerprint != "" {
+					if _, consumeErr := proxy.approvalService.Consume(approvalID, approvalFingerprint); consumeErr != nil {
+						proxy.audit.Record(riskEvent(ctx, definition.ID, "approval_consume_failed", riskResult, time.Since(started)))
+						return &mcp.CallToolResult{IsError: true}, fmt.Errorf("consume approval: %w", consumeErr)
+					}
+					proxy.audit.Record(riskEvent(ctx, definition.ID, "approval_consumed", riskResult, time.Since(started)))
+				} else if _, createErr := proxy.approvalService.CreatePending(request, fingerprint[:16]); createErr != nil {
 					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("create approval: %w", createErr)
+				} else {
+					proxy.audit.Record(riskEvent(ctx, definition.ID, "approval_required", riskResult, time.Since(started)))
+					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("human approval required")
 				}
-				proxy.audit.Record(riskEvent(ctx, definition.ID, "approval_required", riskResult, time.Since(started)))
-				return &mcp.CallToolResult{IsError: true}, fmt.Errorf("human approval required")
 			}
 			if result.Decision == policy.Deny {
 				proxy.audit.Record(riskEvent(ctx, definition.ID, "policy_denied", riskResult, time.Since(started)))
@@ -264,6 +277,8 @@ func riskEvent(ctx context.Context, upstreamID, outcome string, result risk.Resu
 }
 
 type requestIDKey struct{}
+type approvalIDKey struct{}
+type approvalFingerprintKey struct{}
 
 func requestID(request *http.Request) string {
 	return request.Header.Get("X-Request-ID")
@@ -274,6 +289,15 @@ func requestIDFromContext(ctx context.Context) string {
 		return requestID
 	}
 	return ""
+}
+
+func approvalIDFromContext(ctx context.Context) string {
+	value, _ := ctx.Value(approvalIDKey{}).(string)
+	return value
+}
+func approvalFingerprintFromContext(ctx context.Context) string {
+	value, _ := ctx.Value(approvalFingerprintKey{}).(string)
+	return value
 }
 
 func writeError(writer http.ResponseWriter, status int, code string) {

@@ -174,6 +174,14 @@ type Service struct {
 
 func (service *Service) Repository() Repository { return service.repository }
 
+func (service *Service) Review(id string, status Status, reviewer Reviewer, reason string) (Record, error) {
+	return service.repository.Review(id, status, reviewer, reason, service.clock())
+}
+
+func (service *Service) Consume(id, fingerprint string) (Record, error) {
+	return service.repository.Consume(id, fingerprint, service.clock())
+}
+
 func NewService(repository Repository) *Service {
 	return &Service{repository: repository, clock: time.Now}
 }
