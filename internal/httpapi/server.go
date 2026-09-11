@@ -9,6 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/Cosmess/mcpshield/internal/audit"
 	"github.com/Cosmess/mcpshield/internal/identity"
 )
 
@@ -24,6 +25,9 @@ type Server struct {
 	requests       atomic.Uint64
 	mcpHandler     http.Handler
 	authenticator  Authenticator
+	authAudit      audit.Sink
+	authSuccess    atomic.Uint64
+	authFailures   atomic.Uint64
 }
 
 func New(logger *slog.Logger, requestTimeout time.Duration, maxBodyBytes int64) *Server {
@@ -47,20 +51,27 @@ func (server *Server) SetAuthenticator(authenticator Authenticator) {
 	server.authenticator = authenticator
 }
 
+func (server *Server) SetAuthAudit(sink audit.Sink) { server.authAudit = sink }
+
 func (server *Server) mcp(writer http.ResponseWriter, request *http.Request) {
 	if server.mcpHandler == nil {
 		writeJSON(writer, http.StatusNotFound, map[string]string{"error": "mcp_upstream_not_configured"})
 		return
 	}
 	if server.authenticator == nil {
+		server.recordAuth(request, "authentication_required")
 		writeJSON(writer, http.StatusUnauthorized, map[string]string{"error": "authentication_required"})
 		return
 	}
 	principal, err := server.authenticator.Authenticate(request.Context(), request)
 	if err != nil {
+		server.authFailures.Add(1)
+		server.recordAuth(request, "authentication_failed")
 		writeJSON(writer, http.StatusUnauthorized, map[string]string{"error": "authentication_failed"})
 		return
 	}
+	server.authSuccess.Add(1)
+	server.recordAuth(request, "authenticated")
 	request = request.WithContext(identity.WithPrincipal(request.Context(), principal))
 	server.mcpHandler.ServeHTTP(writer, request)
 }
@@ -85,6 +96,14 @@ func (server *Server) metrics(writer http.ResponseWriter, _ *http.Request) {
 	_, _ = writer.Write([]byte("# HELP mcpshield_http_requests_total Total HTTP requests handled by MCPShield.\n"))
 	_, _ = writer.Write([]byte("# TYPE mcpshield_http_requests_total counter\n"))
 	_, _ = writer.Write([]byte("mcpshield_http_requests_total " + strconv.FormatUint(server.requests.Load(), 10) + "\n"))
+	_, _ = writer.Write([]byte("mcpshield_auth_success_total " + strconv.FormatUint(server.authSuccess.Load(), 10) + "\n"))
+	_, _ = writer.Write([]byte("mcpshield_auth_failures_total " + strconv.FormatUint(server.authFailures.Load(), 10) + "\n"))
+}
+
+func (server *Server) recordAuth(request *http.Request, outcome string) {
+	if server.authAudit != nil {
+		server.authAudit.Record(audit.Event{RequestID: request.Header.Get("X-Request-ID"), MCPMethod: "authentication", Outcome: outcome, OccurredAt: time.Now()})
+	}
 }
 
 func (server *Server) instrument(next http.Handler) http.Handler {

@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M2 authentication and identity |
-| Status | M2 foundation merged with verification gaps |
-| Active branch | `main` |
-| Last merged PR | #11 `feat: add M2 JWT authentication foundation` |
-| Last verified commit | `7693fb8` |
-| Next vertical slice | Close M2 auth gaps, then begin M3 policy engine |
+| Status | M2 complete with residual risks; PR pending |
+| Active branch | `fix/m2-authentication-gaps` |
+| Last merged PR | #12 `docs: close M2 foundation checkpoint` |
+| Last verified commit | `390121a` |
+| Next vertical slice | Merge M2 gap fix, then specify M3 policy engine |
 
 ## Completed
 
@@ -26,14 +26,15 @@
 - M1 local verification is `PASS WITH RESIDUAL RISKS`; see the feature verification report.
 - PR #8 merged the SDK-backed proxy implementation and all current M1 gates passed.
 - M2 T1-T4 implementation added: configuration, principal, JWKS, JWT validation, and HTTP integration.
-- M2 verification is `PASS WITH GAPS`; see `.specs/features/m2-authentication/verification.md`.
+- M2 verification is `PASS WITH RESIDUAL RISKS`; see `.specs/features/m2-authentication/verification.md`.
 - PR #11 merged the M2 JWT authentication foundation with all CI gates passing.
+- M2 gap fix adds auth audit/metrics, JWKS TTL/refresh tests, and token edge-case coverage.
 
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
-- Complete auth audit/metrics and JWKS test gaps.
-- Merge the M2 implementation PR.
+- Merge the M2 gap-fix PR.
+- Specify M3 native policy engine after M2 merge.
 - Add authentication audit/metrics, JWKS edge-case tests, and spoofed-header coverage.
 
 ## Not started

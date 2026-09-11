@@ -17,6 +17,7 @@ type Cache struct {
 	ttl       time.Duration
 	client    *http.Client
 	mu        sync.Mutex
+	refreshMu sync.Mutex
 	keys      map[string]*rsa.PublicKey
 	expiresAt time.Time
 }
@@ -60,6 +61,14 @@ func (cache *Cache) Key(ctx context.Context, kid string) (*rsa.PublicKey, error)
 }
 
 func (cache *Cache) refresh(ctx context.Context) error {
+	cache.refreshMu.Lock()
+	defer cache.refreshMu.Unlock()
+	cache.mu.Lock()
+	if time.Now().Before(cache.expiresAt) {
+		cache.mu.Unlock()
+		return nil
+	}
+	cache.mu.Unlock()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, cache.url, nil)
 	if err != nil {
 		return fmt.Errorf("create JWKS request: %w", err)
