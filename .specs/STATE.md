@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: M1 implementation verified.
-- Active work: review and merge the M1 remote MCP reverse proxy implementation.
-- Next action: start M2 authentication and identity after M1 merge.
+- Current phase: M1 complete with residual risks.
+- Active work: prepare the M2 authentication and identity specification.
+- Next action: define caller identity, upstream credential boundaries, and authentication tests.
 - Known blockers: GitHub status checks and branch protection are not configured yet.
