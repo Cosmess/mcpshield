@@ -4,12 +4,12 @@
 
 | Field | Value |
 | --- | --- |
-| Phase | M2 authentication and identity |
-| Status | M2 complete with residual risks; PR pending |
-| Active branch | `fix/m2-authentication-gaps` |
-| Last merged PR | #12 `docs: close M2 foundation checkpoint` |
-| Last verified commit | `390121a` |
-| Next vertical slice | Merge M2 gap fix, then specify M3 policy engine |
+| Phase | M3 native policy engine |
+| Status | M3 specification in progress |
+| Active branch | `feature/m3-policy-spec` |
+| Last merged PR | #13 `test: close M2 authentication verification gaps` |
+| Last verified commit | `f145a62` |
+| Next vertical slice | Review/merge M3 specification, then implement T1-T6 |
 
 ## Completed
 
@@ -29,18 +29,17 @@
 - M2 verification is `PASS WITH RESIDUAL RISKS`; see `.specs/features/m2-authentication/verification.md`.
 - PR #11 merged the M2 JWT authentication foundation with all CI gates passing.
 - M2 gap fix adds auth audit/metrics, JWKS TTL/refresh tests, and token edge-case coverage.
+- M3 policy engine specification, design, and tasks prepared.
 
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
-- Merge the M2 gap-fix PR.
-- Specify M3 native policy engine after M2 merge.
-- Add authentication audit/metrics, JWKS edge-case tests, and spoofed-header coverage.
+- Review and merge the M3 specification before implementation.
 
 ## Not started
 
 - PostgreSQL migrations and audit persistence.
-- Native policy engine, risk engine, DLP, approvals, Kafka, and AI.
+- Risk engine, DLP, approvals, Kafka, and AI.
 
 ## Current verification
 
