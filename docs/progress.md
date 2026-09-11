@@ -4,12 +4,12 @@
 
 | Field | Value |
 | --- | --- |
-| Phase | M3 native policy engine |
-| Status | M3 complete with residual risks; PR pending |
-| Active branch | `feature/m3-policy-startup-wiring` |
-| Last merged PR | #18 `feat: add M3 policy loading and simulation` |
-| Last verified commit | `8888b39` |
-| Next vertical slice | Merge M3 startup wiring, then begin M4 risk engine |
+| Phase | M4 deterministic risk engine |
+| Status | M4 specification in progress |
+| Active branch | `feature/m4-risk-engine-spec` |
+| Last merged PR | #19 `feat: wire M3 policy loading at startup` |
+| Last verified commit | `1646299` |
+| Next vertical slice | Review/merge M4 specification, then implement T1-T6 |
 
 ## Completed
 
@@ -36,16 +36,16 @@
 - PR #16 merged the M3 policy enforcement slice with the merge commit `9c0a9af`.
 - Structured policy loading and side-effect-free simulation are implemented and tested.
 - Gateway startup loads `MCP_SHIELD_POLICY_FILE` and attaches the compiled engine to the proxy.
+- M4 deterministic risk engine specification, design, and tasks prepared.
 
 ## In progress
 
-- Merge the M3 startup-wiring PR.
-- Begin M4 deterministic risk engine specification.
+- Review and merge the M4 specification before implementation.
 
 ## Not started
 
 - PostgreSQL migrations and audit persistence.
-- Risk engine, DLP, approvals, Kafka, and AI.
+- DLP, approvals, Kafka, and AI.
 
 ## Current verification
 
@@ -58,8 +58,8 @@ PR #1 merged the initial documentation and agent harness, PR #2 recorded that ch
 PR #3 merged the M0 specification, PR #4 merged the gateway foundation, PR #5 closed
 the M0 verification gaps, PR #6 closed the M0 progress checkpoint, PR #7 merged the
 M1 specification, PR #8 merged the M1 implementation, PR #9 recorded the M1 checkpoint,
-PR #11 merged the M2 JWT authentication foundation, and PR #16 merged the M3 policy
-enforcement implementation with the merge commit `9c0a9af`. CI is defined in
+PR #11 merged the M2 JWT authentication foundation, PR #16 merged M3 enforcement,
+PR #18 merged policy loading/simulation, and PR #19 merged M3 startup wiring. CI is defined in
 `.github/workflows/ci.yml`; required status checks and branch protection remain part of
 the repository operating model.
 
