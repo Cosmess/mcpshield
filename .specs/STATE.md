@@ -10,9 +10,9 @@
 
 ## Handoff
 
-- Current phase: M6 specification in progress.
-- Active work: M6 human approval specification review.
-- Next action: obtain explicit human approval before implementation begins.
+- Current phase: M6 implementation in progress.
+- Active work: integrate REQUIRE_APPROVAL with the proxy and add lifecycle audit/metrics.
+- Next action: close M6 verification gaps before merge.
 - Current status: PASS WITH RESIDUAL RISKS.
 - Completed: request/response inspection, sanitized DLP audit metadata, and fixed DLP inspection/block/redaction counters.
 - Merge commit: `ff01f54` (PR #28).

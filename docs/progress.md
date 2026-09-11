@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M6 human approval |
-| Status | M6 specification in progress |
-| Active branch | `feature/m6-approval-spec` |
-| Last merged PR | #29 `docs: record M5 completion checkpoint` |
-| Last verified commit | `919c896` |
-| Next vertical slice | Human review/merge M6 specification, then approval-gated implementation |
+| Status | M6 implementation in progress |
+| Active branch | `feature/m6-approval-implementation` |
+| Last merged PR | #30 `docs: specify M6 human approval workflow` |
+| Last verified commit | `bc3cc87` |
+| Next vertical slice | Integrate REQUIRE_APPROVAL with proxy and add lifecycle audit/metrics |
 
 ## Completed
 
@@ -47,10 +47,13 @@
 - M5 verification is `PASS WITH RESIDUAL RISKS`; request/response inspection, sanitized DLP audit metadata, and fixed inspection/block/redaction counters are implemented.
 - PR #28 merged the M5 response inspection and metrics fix with merge commit `ff01f54`.
 - M6 human approval specification, design, and tasks prepared.
+- M6 T1-T3 approval domain, fingerprinting, reviewer guards, expiry, and atomic in-memory consumption implemented.
+- M6 verification is `PASS WITH GAPS`; proxy integration and durable PostgreSQL storage remain.
 
 ## In progress
 
-- M6 specification review requires explicit human approval before implementation begins.
+- Complete M6 proxy integration and lifecycle audit/metrics.
+- Merge the M6 implementation PR.
 
 ## Not started
 
