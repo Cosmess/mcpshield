@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M4 deterministic risk engine |
-| Status | M4 integration complete; PR pending |
-| Active branch | `feature/m4-risk-policy-integration` |
-| Last merged PR | #22 `docs: record m4 risk core checkpoint` |
-| Last verified commit | `16f93b5` |
-| Next vertical slice | Merge M4 integration, then begin M5 DLP and secret detection |
+| Status | M4 PASS WITH RESIDUAL RISKS |
+| Active branch | `docs/m4-integration-checkpoint` |
+| Last merged PR | #23 `docs: close M4 integration checkpoint` |
+| Last verified commit | `a1d34a6` |
+| Next vertical slice | M5 DLP and secret detection |
 
 ## Completed
 
@@ -39,11 +39,12 @@
 - M4 deterministic risk engine specification, design, and tasks prepared.
 - M4 T1-T3 risk core implemented and verified.
 - M4 risk core merged via PR #21 with merge commit `ea46e11b92dead58544ebf127104d3df2c62c731`.
-- M4 verification is `PASS WITH RESIDUAL RISKS`; policy/proxy integration and audit/metrics are implemented.
+- M4 policy/proxy integration completed via PR #23 with merge commit `a1d34a6`.
+- M4 sanitized audit metadata and fixed risk metrics are implemented and verified.
+- M4 verification is `PASS WITH RESIDUAL RISKS`; residual risks and deferred work remain documented in the verification report.
 
 ## In progress
 
-- Merge the M4 policy/proxy integration PR.
 - Begin M5 DLP and secret detection specification.
 
 ## Not started
@@ -55,8 +56,8 @@
 
 M0 is `PASS`. M1 is `PASS WITH RESIDUAL RISKS`; M1 risks are documented in
 `.specs/features/m1-mcp-proxy/verification.md`.
-M4 risk core is `PASS WITH GAPS`; policy/proxy integration and audit/metrics are
-the next work.
+M4 is `PASS WITH RESIDUAL RISKS`; policy/proxy integration, sanitized audit metadata,
+and fixed risk metrics are complete. M5 DLP and secret detection is the next work.
 
 ## Latest merge
 
@@ -67,7 +68,8 @@ M1 specification, PR #8 merged the M1 implementation, PR #9 recorded the M1 chec
 PR #11 merged the M2 JWT authentication foundation, PR #16 merged M3 enforcement,
 PR #18 merged policy loading/simulation, and PR #19 merged M3 startup wiring. CI is defined in
 PR #21 merged the M4 risk core with commit
-`ea46e11b92dead58544ebf127104d3df2c62c731`. CI is defined in
+`ea46e11b92dead58544ebf127104d3df2c62c731`, and PR #23 merged the M4 integration
+checkpoint with commit `a1d34a6`. CI is defined in
 the repository operating model.
 
 ## Working agreement

@@ -10,9 +10,10 @@
 
 ## Handoff
 
-- Current phase: M4 risk core merged via PR #21.
-- Active work: integrate risk with policy/proxy and add audit/metrics.
-- Next action: implement policy/proxy integration plus audit/metrics.
-- Current status: PASS WITH GAPS.
-- Merge commit: `ea46e11b92dead58544ebf127104d3df2c62c731`.
+- Current phase: M4 integration checkpoint merged via PR #23.
+- Active work: prepare the M5 DLP and secret detection specification.
+- Next action: begin M5 DLP and secret detection.
+- Current status: PASS WITH RESIDUAL RISKS.
+- Completed: policy/proxy integration, sanitized audit metadata, and fixed risk metrics.
+- Merge commit: `a1d34a6`.
 - Known blockers: GitHub status checks and branch protection are not configured yet.
