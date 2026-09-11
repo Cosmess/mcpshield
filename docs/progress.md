@@ -6,8 +6,8 @@
 | --- | --- |
 | Phase | M4 deterministic risk engine |
 | Status | M4 PASS WITH RESIDUAL RISKS |
-| Active branch | `docs/m4-integration-checkpoint` |
-| Last merged PR | #23 `docs: close M4 integration checkpoint` |
+| Active branch | `main` |
+| Last merged PR | #23 `feat: integrate M4 risk with policy and proxy` |
 | Last verified commit | `a1d34a6` |
 | Next vertical slice | M5 DLP and secret detection |
 
@@ -68,8 +68,8 @@ M1 specification, PR #8 merged the M1 implementation, PR #9 recorded the M1 chec
 PR #11 merged the M2 JWT authentication foundation, PR #16 merged M3 enforcement,
 PR #18 merged policy loading/simulation, and PR #19 merged M3 startup wiring. CI is defined in
 PR #21 merged the M4 risk core with commit
-`ea46e11b92dead58544ebf127104d3df2c62c731`, and PR #23 merged the M4 integration
-checkpoint with commit `a1d34a6`. CI is defined in
+`ea46e11b92dead58544ebf127104d3df2c62c731`, PR #23 merged the M4 integration
+with commit `a1d34a6`, and PR #24 closed this documentation checkpoint. CI is defined in
 the repository operating model.
 
 ## Working agreement

@@ -4,7 +4,8 @@
 
 `PASS WITH RESIDUAL RISKS`
 
-Checkpoint: PR #23 `docs: close M4 integration checkpoint`, merge commit `a1d34a6`.
+Integration checkpoint: PR #23 `feat: integrate M4 risk with policy and proxy`,
+merge commit `a1d34a6`.
 
 M4 is implemented through policy/proxy integration and sanitized audit/metrics: immutable
 application-owned signal definitions, bounded input, deterministic additive scoring,
