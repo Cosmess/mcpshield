@@ -178,19 +178,36 @@ func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.Cli
 			outcome = "client_canceled"
 		}
 		if err == nil && result != nil {
-			responsePayload, marshalErr := json.Marshal(result)
-			if marshalErr == nil {
-				responseDLP, inspectErr := dlp.InspectJSON(responsePayload)
-				if inspectErr == nil && responseDLP.Action == dlp.Block {
-					proxy.dlpBlocks.Add(1)
-					proxy.audit.Record(dlpEvent(ctx, definition.ID, "dlp_response_blocked", responseDLP, time.Since(started)))
-					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("tool response blocked by DLP")
-				}
+			responseDLP := inspectToolResponse(result)
+			if responseDLP.Action == dlp.Block {
+				proxy.dlpBlocks.Add(1)
+				proxy.audit.Record(dlpEvent(ctx, definition.ID, "dlp_response_blocked", responseDLP, time.Since(started)))
+				return &mcp.CallToolResult{IsError: true}, fmt.Errorf("tool response blocked by DLP")
 			}
 		}
 		proxy.audit.Record(riskEvent(ctx, definition.ID, outcome, riskResult, time.Since(started)))
 		return result, err
 	}
+}
+
+func inspectToolResponse(result *mcp.CallToolResult) dlp.Result {
+	if payload, err := json.Marshal(result.StructuredContent); err == nil && len(payload) > 0 && string(payload) != "null" {
+		if inspected, inspectErr := dlp.InspectJSON(payload); inspectErr == nil && inspected.Action == dlp.Block {
+			return inspected
+		}
+	}
+	for _, content := range result.Content {
+		if text, ok := content.(*mcp.TextContent); ok {
+			payload, err := json.Marshal(map[string]string{"text": text.Text})
+			if err != nil {
+				continue
+			}
+			if inspected, inspectErr := dlp.InspectJSON(payload); inspectErr == nil && inspected.Action == dlp.Block {
+				return inspected
+			}
+		}
+	}
+	return dlp.Result{Action: dlp.Audit}
 }
 
 func dlpEvent(ctx context.Context, upstreamID, outcome string, result dlp.Result, duration time.Duration) audit.Event {
