@@ -86,3 +86,23 @@ func TestApprovalConsumeIsAtomic(t *testing.T) {
 		t.Fatalf("successful consumes = %d, want 1", successes)
 	}
 }
+
+func TestApprovalTransitionHookReceivesLifecycleEvents(t *testing.T) {
+	now := time.Now().UTC()
+	service := NewService(NewMemoryRepository())
+	var statuses []Status
+	service.SetTransitionHook(func(status Status, _ Record) { statuses = append(statuses, status) })
+	record, err := service.CreatePending(testRequest(now.Add(time.Minute)), "approval-hook")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.Review(record.ID, Approved, Reviewer{Subject: "reviewer", Roles: []string{"approver"}}, "ok"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = service.Consume(record.ID, record.Fingerprint); err != nil {
+		t.Fatal(err)
+	}
+	if len(statuses) != 3 || statuses[0] != Pending || statuses[1] != Approved || statuses[2] != Consumed {
+		t.Fatalf("statuses = %#v", statuses)
+	}
+}

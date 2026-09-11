@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -47,12 +48,16 @@ func run(parent context.Context, logger *slog.Logger) error {
 	if err != nil {
 		return fmt.Errorf("create upstream registry: %w", err)
 	}
-	proxy, err := mcpproxy.New(parent, registry, logger, audit.NewMemorySink(1024))
+	auditSink := audit.NewMemorySink(1024)
+	proxy, err := mcpproxy.New(parent, registry, logger, auditSink)
 	if err != nil {
 		return fmt.Errorf("create MCP proxy: %w", err)
 	}
 	defer proxy.Close()
 	approvalService := approval.NewService(approval.NewMemoryRepository())
+	approvalService.SetTransitionHook(func(status approval.Status, record approval.Record) {
+		auditSink.Record(audit.Event{UpstreamID: record.UpstreamID, MCPMethod: record.Method, Outcome: "approval_" + strings.ToLower(string(status)), OccurredAt: time.Now()})
+	})
 	proxy.SetApprovalService(approvalService)
 	api.SetApprovalService(approvalService)
 	if config.PolicyFile != "" {

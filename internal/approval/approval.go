@@ -169,16 +169,19 @@ func (repository *MemoryRepository) Consume(id, fingerprint string, now time.Tim
 }
 
 type Service struct {
-	repository Repository
-	clock      func() time.Time
-	created    atomic.Uint64
-	approved   atomic.Uint64
-	denied     atomic.Uint64
-	expired    atomic.Uint64
-	consumed   atomic.Uint64
+	repository   Repository
+	clock        func() time.Time
+	onTransition func(Status, Record)
+	created      atomic.Uint64
+	approved     atomic.Uint64
+	denied       atomic.Uint64
+	expired      atomic.Uint64
+	consumed     atomic.Uint64
 }
 
 func (service *Service) Repository() Repository { return service.repository }
+
+func (service *Service) SetTransitionHook(hook func(Status, Record)) { service.onTransition = hook }
 
 func (service *Service) Review(id string, status Status, reviewer Reviewer, reason string) (Record, error) {
 	record, err := service.repository.Review(id, status, reviewer, reason, service.clock())
@@ -192,6 +195,9 @@ func (service *Service) Review(id string, status Status, reviewer Reviewer, reas
 	if errors.Is(err, ErrExpired) {
 		service.expired.Add(1)
 	}
+	if err == nil && service.onTransition != nil {
+		service.onTransition(status, record)
+	}
 	return record, err
 }
 
@@ -202,6 +208,9 @@ func (service *Service) Consume(id, fingerprint string) (Record, error) {
 	}
 	if errors.Is(err, ErrExpired) {
 		service.expired.Add(1)
+	}
+	if err == nil && service.onTransition != nil {
+		service.onTransition(Consumed, record)
 	}
 	return record, err
 }
@@ -230,6 +239,9 @@ func (service *Service) CreatePending(request Request, id string) (Record, error
 		return Record{}, err
 	}
 	service.created.Add(1)
+	if service.onTransition != nil {
+		service.onTransition(Pending, record)
+	}
 	return record, nil
 }
 
