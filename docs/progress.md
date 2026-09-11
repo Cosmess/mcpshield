@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M1 remote MCP proxy |
-| Status | M1 implementation verified; PR pending |
-| Active branch | `feature/m1-mcp-proxy-implementation` |
-| Last merged PR | #7 `docs: specify M1 remote MCP proxy` |
-| Last verified commit | `8032add` |
-| Next vertical slice | Merge M1 implementation, then begin M2 authentication and identity |
+| Status | M1 complete with residual risks |
+| Active branch | `main` |
+| Last merged PR | #8 `feat: implement M1 remote MCP proxy` |
+| Last verified commit | `f6207cf` |
+| Next vertical slice | M2: authentication and identity |
 
 ## Completed
 
@@ -24,12 +24,13 @@
 - M1 specification, design, and task breakdown prepared under `.specs/features/m1-mcp-proxy/`.
 - M1 SDK-backed proxy, trusted registry, audit sink, and integration tests implemented.
 - M1 local verification is `PASS WITH RESIDUAL RISKS`; see the feature verification report.
+- PR #8 merged the SDK-backed proxy implementation and all current M1 gates passed.
 
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
-- Merge the M1 implementation PR.
-- Start M2 authentication and identity specification after M1 merge.
+- Add CI gates before the next implementation slice is merged.
+- Specify M2 authentication and identity after the M1 risks are reviewed.
 
 ## Not started
 
@@ -48,8 +49,9 @@ M0 is `PASS`. M1 is `PASS WITH RESIDUAL RISKS`; M1 risks are documented in
 
 PR #1 merged the initial documentation and agent harness, PR #2 recorded that checkpoint,
 PR #3 merged the M0 specification, PR #4 merged the gateway foundation, PR #5 closed
-the M0 verification gaps, PR #6 closed the M0 progress checkpoint, and PR #7 merged the
-M1 specification. No GitHub status checks are configured yet.
+the M0 verification gaps, PR #6 closed the M0 progress checkpoint, PR #7 merged the
+M1 specification, and PR #8 merged the M1 implementation. No GitHub status checks are
+configured yet.
 
 ## Working agreement
 
