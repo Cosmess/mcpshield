@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"sort"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/Cosmess/mcpshield/internal/identity"
@@ -170,16 +171,43 @@ func (repository *MemoryRepository) Consume(id, fingerprint string, now time.Tim
 type Service struct {
 	repository Repository
 	clock      func() time.Time
+	created    atomic.Uint64
+	approved   atomic.Uint64
+	denied     atomic.Uint64
+	expired    atomic.Uint64
+	consumed   atomic.Uint64
 }
 
 func (service *Service) Repository() Repository { return service.repository }
 
 func (service *Service) Review(id string, status Status, reviewer Reviewer, reason string) (Record, error) {
-	return service.repository.Review(id, status, reviewer, reason, service.clock())
+	record, err := service.repository.Review(id, status, reviewer, reason, service.clock())
+	if err == nil {
+		if status == Approved {
+			service.approved.Add(1)
+		} else if status == Denied {
+			service.denied.Add(1)
+		}
+	}
+	if errors.Is(err, ErrExpired) {
+		service.expired.Add(1)
+	}
+	return record, err
 }
 
 func (service *Service) Consume(id, fingerprint string) (Record, error) {
-	return service.repository.Consume(id, fingerprint, service.clock())
+	record, err := service.repository.Consume(id, fingerprint, service.clock())
+	if err == nil {
+		service.consumed.Add(1)
+	}
+	if errors.Is(err, ErrExpired) {
+		service.expired.Add(1)
+	}
+	return record, err
+}
+
+func (service *Service) Metrics() string {
+	return fmt.Sprintf("mcpshield_approval_created_total %d\nmcpshield_approval_approved_total %d\nmcpshield_approval_denied_total %d\nmcpshield_approval_expired_total %d\nmcpshield_approval_consumed_total %d\n", service.created.Load(), service.approved.Load(), service.denied.Load(), service.expired.Load(), service.consumed.Load())
 }
 
 func NewService(repository Repository) *Service {
@@ -201,6 +229,7 @@ func (service *Service) CreatePending(request Request, id string) (Record, error
 	if err := service.repository.Create(record); err != nil {
 		return Record{}, err
 	}
+	service.created.Add(1)
 	return record, nil
 }
 

@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/Cosmess/mcpshield/internal/approval"
 	"github.com/Cosmess/mcpshield/internal/audit"
 	"github.com/Cosmess/mcpshield/internal/auth"
 	"github.com/Cosmess/mcpshield/internal/config"
@@ -51,6 +52,9 @@ func run(parent context.Context, logger *slog.Logger) error {
 		return fmt.Errorf("create MCP proxy: %w", err)
 	}
 	defer proxy.Close()
+	approvalService := approval.NewService(approval.NewMemoryRepository())
+	proxy.SetApprovalService(approvalService)
+	api.SetApprovalService(approvalService)
 	if config.PolicyFile != "" {
 		policyFile, err := os.Open(config.PolicyFile)
 		if err != nil {
