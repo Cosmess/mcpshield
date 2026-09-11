@@ -11,9 +11,9 @@
 ## Handoff
 
 - Current phase: M5 complete with residual risks.
-- Active work: review and merge the M5 response/metrics fix.
-- Next action: specify M6 human approval after M5 merge.
+- Active work: M5 completion checkpoint recorded after PR #28.
+- Next action: obtain human approval for M6 human approval specification.
 - Current status: PASS WITH RESIDUAL RISKS.
-- Completed: policy/proxy integration, sanitized audit metadata, and fixed risk metrics.
-- Merge commit: `a1d34a6`.
+- Completed: request/response inspection, sanitized DLP audit metadata, and fixed DLP inspection/block/redaction counters.
+- Merge commit: `ff01f54` (PR #28).
 - Known blockers: GitHub status checks and branch protection are not configured yet.
