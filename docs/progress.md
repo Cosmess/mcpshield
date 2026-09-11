@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M6 human approval |
-| Status | M6 PostgreSQL persistence in progress |
-| Active branch | `feature/m6-postgres-approval` |
+| Status | M6 PostgreSQL persistence verified; PR pending |
+| Active branch | `test/m6-postgres-integration` |
 | Last merged PR | #35 `feat: audit M6 approval lifecycle transitions` |
 | Last verified commit | `dd62ca4` |
-| Next vertical slice | Add PostgreSQL integration tests, then close M6 |
+| Next vertical slice | Merge PostgreSQL integration PR, then close M6 |
 
 ## Completed
 
@@ -53,11 +53,12 @@
 - M6 reviewer/consume service operations are wired to bound proxy headers.
 - M6 reviewer routes and fixed lifecycle metrics are implemented and tested.
 - M6 PostgreSQL repository, migration, optional startup wiring, and atomic consume are implemented.
+- M6 Testcontainers PostgreSQL tests verify migration, lifecycle, replay rejection, and one-success concurrent consume.
 
 ## In progress
 
-- Add PostgreSQL Testcontainer integration coverage.
-- Merge the M6 PostgreSQL persistence PR.
+- Merge the M6 PostgreSQL integration PR.
+- Close M6 with production persistence risks documented.
 
 ## Not started
 

@@ -7,7 +7,7 @@
 M6 T1-T6 are implemented: approval state domain, policy-bound fingerprinting, reviewer
 authorization, expiry, denial, in-memory repository, atomic one-time consumption, proxy
 consumption through bound approval headers, authenticated reviewer HTTP routes, fixed
-lifecycle metrics, optional PostgreSQL-backed persistence, and an atomic conditional consume.
+lifecycle metrics, PostgreSQL-backed persistence, migration, and an atomic conditional consume.
 
 ## Acceptance criteria evidence
 
@@ -21,7 +21,7 @@ lifecycle metrics, optional PostgreSQL-backed persistence, and an atomic conditi
 | M6-AC6 | Atomic in-memory consume with concurrent one-success test | PASS |
 | M6-AC7 | Proxy creates PENDING without headers and consumes only a matching approved fingerprint | PASS |
 | M6-AC8 | No AI approval transition exists; reviewer routes require authenticated reviewer context | PASS |
-| M6-AC9 | State transition and race tests pass; PostgreSQL consume uses conditional update | PASS WITH GAP |
+| M6-AC9 | State transition, race, and live PostgreSQL Testcontainer tests pass; consume uses conditional update | PASS |
 
 ## Executed focused gates
 
@@ -34,11 +34,9 @@ go vet ./internal/approval  PASS
 
 ## Remaining work
 
-- Add PostgreSQL Testcontainer integration coverage for migration and repository transitions.
-- Run the database-backed full repository gates before the implementation PR.
+- Add production secret management and connection-pool operational settings.
 
 ## Residual risks
 
-PostgreSQL persistence is available when `MCP_SHIELD_DATABASE_URL` is configured, but
-Testcontainer coverage, production secret management, connection pool sizing, and durable
-audit storage remain before production use.
+PostgreSQL persistence is available when `MCP_SHIELD_DATABASE_URL` is configured. Production
+secret management, connection pool sizing, and durable audit storage remain before production use.
