@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Cosmess/mcpshield/internal/audit"
+	"github.com/Cosmess/mcpshield/internal/auth"
 	"github.com/Cosmess/mcpshield/internal/config"
 	"github.com/Cosmess/mcpshield/internal/httpapi"
 	"github.com/Cosmess/mcpshield/internal/mcpproxy"
@@ -33,6 +34,13 @@ func run(parent context.Context, logger *slog.Logger) error {
 	}
 
 	api := httpapi.New(logger, config.RequestTimeout, config.MaxBodyBytes)
+	if config.AuthIssuer != "" {
+		validator, err := auth.NewValidator(auth.Config{Issuer: config.AuthIssuer, Audience: config.AuthAudience, JWKSURL: config.AuthJWKSURL, CacheTTL: 5 * time.Minute, Timeout: config.RequestTimeout})
+		if err != nil {
+			return fmt.Errorf("create authenticator: %w", err)
+		}
+		api.SetAuthenticator(validator)
+	}
 	registry, err := upstream.NewRegistry(config.Upstreams)
 	if err != nil {
 		return fmt.Errorf("create upstream registry: %w", err)

@@ -15,6 +15,9 @@ type Config struct {
 	ShutdownTimeout time.Duration
 	MaxBodyBytes    int64
 	Upstreams       []upstream.Definition
+	AuthIssuer      string
+	AuthAudience    string
+	AuthJWKSURL     string
 }
 
 func Load() (Config, error) {
@@ -46,6 +49,18 @@ func Load() (Config, error) {
 	}
 	if config.HTTPAddr == "" {
 		return Config{}, fmt.Errorf("MCP_SHIELD_HTTP_ADDR must not be empty")
+	}
+	config.AuthIssuer = os.Getenv("MCP_SHIELD_OIDC_ISSUER")
+	config.AuthAudience = os.Getenv("MCP_SHIELD_OIDC_AUDIENCE")
+	config.AuthJWKSURL = os.Getenv("MCP_SHIELD_OIDC_JWKS_URL")
+	authValues := 0
+	for _, value := range []string{config.AuthIssuer, config.AuthAudience, config.AuthJWKSURL} {
+		if value != "" {
+			authValues++
+		}
+	}
+	if authValues != 0 && authValues != 3 {
+		return Config{}, fmt.Errorf("OIDC issuer, audience, and JWKS URL must be configured together")
 	}
 	if upstreamID := os.Getenv("MCP_SHIELD_UPSTREAM_ID"); upstreamID != "" {
 		endpoint := os.Getenv("MCP_SHIELD_UPSTREAM_ENDPOINT")
