@@ -32,6 +32,9 @@ type Proxy struct {
 	riskEvaluations atomic.Uint64
 	riskHigh        atomic.Uint64
 	riskCritical    atomic.Uint64
+	dlpInspections  atomic.Uint64
+	dlpBlocks       atomic.Uint64
+	dlpRedactions   atomic.Uint64
 }
 
 func (proxy *Proxy) SetPolicy(engine *policy.Engine) { proxy.policy = engine }
@@ -123,15 +126,18 @@ func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.Cli
 		started := time.Now()
 		arguments := request.Params.Arguments
 		dlpResult, dlpErr := dlp.InspectJSON(arguments)
+		proxy.dlpInspections.Add(1)
 		if dlpErr != nil {
 			proxy.audit.Record(dlpEvent(ctx, definition.ID, "dlp_error", dlpResult, time.Since(started)))
 			return &mcp.CallToolResult{IsError: true}, fmt.Errorf("inspect tool arguments: %w", dlpErr)
 		}
 		if dlpResult.Action == dlp.Block {
+			proxy.dlpBlocks.Add(1)
 			proxy.audit.Record(dlpEvent(ctx, definition.ID, "dlp_blocked", dlpResult, time.Since(started)))
 			return &mcp.CallToolResult{IsError: true}, fmt.Errorf("tool arguments blocked by DLP")
 		}
 		if dlpResult.Action == dlp.Redact {
+			proxy.dlpRedactions.Add(1)
 			arguments = dlpResult.Payload
 			proxy.audit.Record(dlpEvent(ctx, definition.ID, "dlp_redacted", dlpResult, time.Since(started)))
 		}
@@ -171,6 +177,17 @@ func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.Cli
 		if ctx.Err() != nil {
 			outcome = "client_canceled"
 		}
+		if err == nil && result != nil {
+			responsePayload, marshalErr := json.Marshal(result)
+			if marshalErr == nil {
+				responseDLP, inspectErr := dlp.InspectJSON(responsePayload)
+				if inspectErr == nil && responseDLP.Action == dlp.Block {
+					proxy.dlpBlocks.Add(1)
+					proxy.audit.Record(dlpEvent(ctx, definition.ID, "dlp_response_blocked", responseDLP, time.Since(started)))
+					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("tool response blocked by DLP")
+				}
+			}
+		}
 		proxy.audit.Record(riskEvent(ctx, definition.ID, outcome, riskResult, time.Since(started)))
 		return result, err
 	}
@@ -187,7 +204,7 @@ func dlpEvent(ctx context.Context, upstreamID, outcome string, result dlp.Result
 }
 
 func (proxy *Proxy) RiskMetrics() string {
-	return fmt.Sprintf("mcpshield_risk_evaluations_total %d\nmcpshield_risk_high_total %d\nmcpshield_risk_critical_total %d\n", proxy.riskEvaluations.Load(), proxy.riskHigh.Load(), proxy.riskCritical.Load())
+	return fmt.Sprintf("mcpshield_risk_evaluations_total %d\nmcpshield_risk_high_total %d\nmcpshield_risk_critical_total %d\nmcpshield_dlp_inspections_total %d\nmcpshield_dlp_blocks_total %d\nmcpshield_dlp_redactions_total %d\n", proxy.riskEvaluations.Load(), proxy.riskHigh.Load(), proxy.riskCritical.Load(), proxy.dlpInspections.Load(), proxy.dlpBlocks.Load(), proxy.dlpRedactions.Load())
 }
 
 func riskSignals(operation policy.OperationClass) []string {

@@ -10,9 +10,9 @@
 
 ## Handoff
 
-- Current phase: M5 implementation in progress.
-- Active work: complete response inspection and DLP metrics.
-- Next action: close M5 verification gaps before merge.
+- Current phase: M5 complete with residual risks.
+- Active work: review and merge the M5 response/metrics fix.
+- Next action: specify M6 human approval after M5 merge.
 - Current status: PASS WITH RESIDUAL RISKS.
 - Completed: policy/proxy integration, sanitized audit metadata, and fixed risk metrics.
 - Merge commit: `a1d34a6`.

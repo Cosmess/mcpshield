@@ -2,11 +2,11 @@
 
 ## Verdict
 
-`PASS WITH GAPS`
+`PASS WITH RESIDUAL RISKS`
 
-M5 T1-T4 are implemented: bounded deterministic JSON inspection, baseline secret detectors,
-metadata-only matches, structural redaction, and request-side proxy blocking/redaction before
-upstream dispatch. Response inspection and dedicated DLP metrics remain for the next slice.
+M5 is implemented through request/response inspection, bounded deterministic secret detectors,
+metadata-only matches, structural redaction, proxy blocking before upstream dispatch, and
+fixed DLP metrics.
 
 ## Acceptance criteria evidence
 
@@ -17,9 +17,9 @@ upstream dispatch. Response inspection and dedicated DLP metrics remain for the 
 | M5-AC3 | BLOCK/REDACT/AUDIT action model and action tests | PASS |
 | M5-AC4 | Password redaction round-trip produces valid JSON and `[REDACTED]` | PASS |
 | M5-AC5 | `TestProxyRelaysDiscoveryAndToolCalls` blocks secret-bearing arguments before upstream | PASS |
-| M5-AC6 | Response inspection is not integrated yet | GAP |
+| M5-AC6 | Structured tool responses are inspected before client delivery and secret-like output is blocked | PASS |
 | M5-AC7 | Payload, depth, match, and path bounds are enforced | PASS |
-| M5-AC8 | DLP audit metadata exists; dedicated DLP metrics remain | PASS WITH GAP |
+| M5-AC8 | Sanitized DLP audit metadata and fixed inspection/block/redaction counters are implemented | PASS |
 | M5-AC9 | This report documents deterministic matching limitations | PASS |
 
 ## Executed focused gates
@@ -31,14 +31,23 @@ go test -race ./internal/dlp ./internal/mcpproxy  PASS
 go vet ./internal/dlp ./internal/mcpproxy  PASS
 ```
 
-## Remaining work
+## Executed gates
 
-- Add response-side inspection/redaction before MCP client delivery.
-- Add fixed-cardinality DLP metrics.
-- Run full repository gates before the implementation PR.
+```text
+gofmt -w cmd internal       PASS
+go test ./...               PASS
+go test -race ./...         PASS
+go vet ./...                PASS
+go build ./cmd/...          PASS
+docker compose config       PASS
+git diff --check            PASS
+```
 
 ## Residual privacy risk
 
 These detectors are deterministic patterns, not complete enterprise DLP. False positives,
 false negatives, provider-specific secret formats, encoded secrets, and non-JSON payloads
 remain possible and must not be presented as fully prevented exfiltration.
+
+Response redaction for arbitrary MCP content types remains conservative: secret-like output
+is blocked, while safe structural transformation is currently limited to JSON payloads.

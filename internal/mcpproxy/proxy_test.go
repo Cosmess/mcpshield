@@ -22,6 +22,9 @@ type greetInput struct {
 func TestProxyRelaysDiscoveryAndToolCalls(t *testing.T) {
 	upstreamServer := mcp.NewServer(&mcp.Implementation{Name: "mock-upstream", Version: "1.0.0"}, nil)
 	mcp.AddTool(upstreamServer, &mcp.Tool{Name: "greet", Description: "Greet a person"}, func(_ context.Context, _ *mcp.CallToolRequest, input greetInput) (*mcp.CallToolResult, any, error) {
+		if input.Name == "secret" {
+			return &mcp.CallToolResult{StructuredContent: map[string]any{"key": "-----BEGIN RSA PRIVATE KEY-----"}}, nil, nil
+		}
 		return nil, map[string]any{"message": "hello " + input.Name}, nil
 	})
 	upstreamHTTP := httptest.NewServer(mcp.NewStreamableHTTPHandler(func(*http.Request) *mcp.Server { return upstreamServer }, &mcp.StreamableHTTPOptions{Stateless: true, JSONResponse: true}))
@@ -105,6 +108,20 @@ func TestProxyRelaysDiscoveryAndToolCalls(t *testing.T) {
 	}
 	if !foundPolicyDeny {
 		t.Fatalf("policy denial audit event not found: %#v", sink.Events())
+	}
+	proxy.SetPolicy(nil)
+	responseBlocked, responseErr := session.CallTool(context.Background(), &mcp.CallToolParams{Name: "greet", Arguments: map[string]any{"name": "secret"}})
+	if responseErr == nil && (responseBlocked == nil || !responseBlocked.IsError) {
+		t.Fatalf("secret response was not blocked: %#v, %v", responseBlocked, responseErr)
+	}
+	foundResponseBlock := false
+	for _, event := range sink.Events() {
+		if event.Outcome == "dlp_response_blocked" {
+			foundResponseBlock = true
+		}
+	}
+	if !foundResponseBlock {
+		t.Fatalf("response DLP audit event not found: %#v", sink.Events())
 	}
 }
 

@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M5 DLP and secret detection |
-| Status | M5 implementation in progress |
-| Active branch | `feature/m5-dlp-implementation` |
-| Last merged PR | #26 `docs: specify M5 DLP and secret detection` |
-| Last verified commit | `5dd5f51` |
-| Next vertical slice | Add response inspection and DLP metrics |
+| Status | M5 complete with residual risks; PR pending |
+| Active branch | `fix/m5-dlp-response-metrics` |
+| Last merged PR | #27 `feat: add M5 DLP request inspection` |
+| Last verified commit | `97a3020` |
+| Next vertical slice | Merge M5 response/metrics fix, then begin M6 human approval |
 
 ## Completed
 
@@ -44,12 +44,12 @@
 - M4 verification is `PASS WITH RESIDUAL RISKS`; residual risks and deferred work remain documented in the verification report.
 - M5 DLP and secret detection specification, design, and tasks prepared.
 - M5 T1-T4 DLP core and request-side proxy integration implemented.
-- M5 verification is `PASS WITH GAPS`; response inspection and dedicated metrics remain.
+- M5 verification is `PASS WITH RESIDUAL RISKS`; request/response inspection and DLP metrics are implemented.
 
 ## In progress
 
-- Complete response-side inspection and DLP metrics.
-- Merge the M5 implementation PR.
+- Merge the M5 response/metrics fix.
+- Begin M6 human approval specification.
 
 ## Not started
 
