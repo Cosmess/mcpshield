@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M3 native policy engine |
-| Status | M3 implementation in progress |
+| Status | M3 enforcement in progress |
 | Active branch | `feature/m3-policy-implementation` |
 | Last merged PR | #14 `docs: specify M3 native policy engine` |
 | Last verified commit | `ee74934` |
-| Next vertical slice | Integrate policy enforcement and simulation |
+| Next vertical slice | Add policy configuration loading and simulation |
 
 ## Completed
 
@@ -32,11 +32,12 @@
 - M3 policy engine specification, design, and tasks prepared.
 - M3 T1-T3 policy core implemented and verified.
 - M3 verification is `PASS WITH GAPS`; proxy enforcement and simulation remain.
+- M3 policy enforcement now blocks DENY before upstream invocation and audits the decision.
 
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
-- Complete M3 proxy enforcement and simulation.
+- Complete M3 policy loading and simulation.
 - Merge the M3 implementation PR.
 
 ## Not started

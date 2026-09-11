@@ -110,6 +110,10 @@ func (engine *Engine) Evaluate(input Input) Result {
 	return Result{Decision: decision, MatchedIDs: ids, Reason: fmt.Sprintf("matched priority %d", highest)}
 }
 
+func (engine *Engine) Simulate(input Input) Result {
+	return engine.Evaluate(input)
+}
+
 func matches(rule Rule, input Input) bool {
 	if rule.TenantID != "" && rule.TenantID != input.Principal.TenantID {
 		return false

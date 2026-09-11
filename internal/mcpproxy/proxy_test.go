@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Cosmess/mcpshield/internal/audit"
+	"github.com/Cosmess/mcpshield/internal/policy"
 	"github.com/Cosmess/mcpshield/internal/upstream"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -63,6 +64,18 @@ func TestProxyRelaysDiscoveryAndToolCalls(t *testing.T) {
 	}
 	if events := sink.Events(); len(events) != 1 || events[0].Outcome != "success" || events[0].MCPMethod != "tools/call" {
 		t.Fatalf("audit events = %#v, want successful tools/call event", events)
+	}
+	denyEngine, err := policy.New([]policy.Rule{{ID: "default-deny", Decision: policy.Deny}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	proxy.SetPolicy(denyEngine)
+	denied, err := session.CallTool(context.Background(), &mcp.CallToolParams{Name: "greet", Arguments: map[string]any{"name": "blocked"}})
+	if err == nil || denied != nil {
+		t.Fatalf("denied CallTool() = %#v, %v", denied, err)
+	}
+	if events := sink.Events(); len(events) != 2 || events[1].Outcome != "policy_denied" {
+		t.Fatalf("audit events = %#v", events)
 	}
 }
 

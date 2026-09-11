@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/Cosmess/mcpshield/internal/audit"
+	"github.com/Cosmess/mcpshield/internal/identity"
+	"github.com/Cosmess/mcpshield/internal/policy"
 	"github.com/Cosmess/mcpshield/internal/upstream"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
@@ -23,7 +25,10 @@ type Proxy struct {
 	servers  map[string]*mcp.StreamableHTTPHandler
 	sessions map[string]*mcp.ClientSession
 	mu       sync.RWMutex
+	policy   *policy.Engine
 }
+
+func (proxy *Proxy) SetPolicy(engine *policy.Engine) { proxy.policy = engine }
 
 func New(ctx context.Context, registry *upstream.Registry, logger *slog.Logger, sink audit.Sink) (*Proxy, error) {
 	proxy := &Proxy{logger: logger, audit: sink, servers: make(map[string]*mcp.StreamableHTTPHandler), sessions: make(map[string]*mcp.ClientSession)}
@@ -110,6 +115,20 @@ func (proxy *Proxy) addUpstream(ctx context.Context, definition upstream.Definit
 func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.ClientSession, toolName string) mcp.ToolHandler {
 	return func(ctx context.Context, request *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		started := time.Now()
+		if proxy.policy != nil {
+			principal, _ := identity.FromContext(ctx)
+			arguments := map[string]any{}
+			if len(request.Params.Arguments) > 0 {
+				if err := json.Unmarshal(request.Params.Arguments, &arguments); err != nil {
+					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("decode tool arguments for policy: %w", err)
+				}
+			}
+			result := proxy.policy.Evaluate(policy.Input{Principal: principal, UpstreamID: definition.ID, Method: "tools/call", Tool: toolName, Operation: policy.Classify("tools/call", toolName), Arguments: arguments})
+			if result.Decision == policy.Deny {
+				proxy.audit.Record(audit.Event{RequestID: requestIDFromContext(ctx), UpstreamID: definition.ID, MCPMethod: "tools/call", Outcome: "policy_denied", Duration: time.Since(started), OccurredAt: time.Now()})
+				return &mcp.CallToolResult{IsError: true}, fmt.Errorf("policy denied: %s", result.Reason)
+			}
+		}
 		result, err := session.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: request.Params.Arguments})
 		outcome := "success"
 		if err != nil {
