@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M4 deterministic risk engine |
-| Status | M4 specification in progress |
-| Active branch | `feature/m4-risk-engine-spec` |
-| Last merged PR | #19 `feat: wire M3 policy loading at startup` |
-| Last verified commit | `1646299` |
-| Next vertical slice | Review/merge M4 specification, then implement T1-T6 |
+| Status | M4 implementation in progress |
+| Active branch | `feature/m4-risk-engine-implementation` |
+| Last merged PR | #20 `docs: specify M4 deterministic risk engine` |
+| Last verified commit | `6398ed0` |
+| Next vertical slice | Integrate risk with policy/proxy and add audit/metrics |
 
 ## Completed
 
@@ -37,10 +37,13 @@
 - Structured policy loading and side-effect-free simulation are implemented and tested.
 - Gateway startup loads `MCP_SHIELD_POLICY_FILE` and attaches the compiled engine to the proxy.
 - M4 deterministic risk engine specification, design, and tasks prepared.
+- M4 T1-T3 risk core implemented and verified.
+- M4 verification is `PASS WITH GAPS`; policy/proxy integration remains.
 
 ## In progress
 
-- Review and merge the M4 specification before implementation.
+- Complete M4 policy/proxy integration and audit/metrics.
+- Merge the M4 implementation PR.
 
 ## Not started
 
