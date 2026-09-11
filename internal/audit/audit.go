@@ -16,6 +16,9 @@ type Event struct {
 	RiskScore       int
 	RiskSeverity    string
 	RiskSignals     []string
+	DLPAction       string
+	DLPDetectors    []string
+	DLPPaths        []string
 }
 
 type Sink interface {

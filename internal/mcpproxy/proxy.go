@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/Cosmess/mcpshield/internal/audit"
+	"github.com/Cosmess/mcpshield/internal/dlp"
 	"github.com/Cosmess/mcpshield/internal/identity"
 	"github.com/Cosmess/mcpshield/internal/policy"
 	"github.com/Cosmess/mcpshield/internal/risk"
@@ -120,6 +121,20 @@ func (proxy *Proxy) addUpstream(ctx context.Context, definition upstream.Definit
 func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.ClientSession, toolName string) mcp.ToolHandler {
 	return func(ctx context.Context, request *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 		started := time.Now()
+		arguments := request.Params.Arguments
+		dlpResult, dlpErr := dlp.InspectJSON(arguments)
+		if dlpErr != nil {
+			proxy.audit.Record(dlpEvent(ctx, definition.ID, "dlp_error", dlpResult, time.Since(started)))
+			return &mcp.CallToolResult{IsError: true}, fmt.Errorf("inspect tool arguments: %w", dlpErr)
+		}
+		if dlpResult.Action == dlp.Block {
+			proxy.audit.Record(dlpEvent(ctx, definition.ID, "dlp_blocked", dlpResult, time.Since(started)))
+			return &mcp.CallToolResult{IsError: true}, fmt.Errorf("tool arguments blocked by DLP")
+		}
+		if dlpResult.Action == dlp.Redact {
+			arguments = dlpResult.Payload
+			proxy.audit.Record(dlpEvent(ctx, definition.ID, "dlp_redacted", dlpResult, time.Since(started)))
+		}
 		operation := policy.Classify("tools/call", toolName)
 		signalIDs := riskSignals(operation)
 		riskResult, riskErr := risk.Evaluate(risk.Input{Signals: signalIDs})
@@ -136,19 +151,19 @@ func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.Cli
 		}
 		if proxy.policy != nil {
 			principal, _ := identity.FromContext(ctx)
-			arguments := map[string]any{}
-			if len(request.Params.Arguments) > 0 {
-				if err := json.Unmarshal(request.Params.Arguments, &arguments); err != nil {
+			argumentsMap := map[string]any{}
+			if len(arguments) > 0 {
+				if err := json.Unmarshal(arguments, &argumentsMap); err != nil {
 					return &mcp.CallToolResult{IsError: true}, fmt.Errorf("decode tool arguments for policy: %w", err)
 				}
 			}
-			result := proxy.policy.Evaluate(policy.Input{Principal: principal, UpstreamID: definition.ID, Method: "tools/call", Tool: toolName, Operation: operation, Arguments: arguments, Risk: &riskResult})
+			result := proxy.policy.Evaluate(policy.Input{Principal: principal, UpstreamID: definition.ID, Method: "tools/call", Tool: toolName, Operation: operation, Arguments: argumentsMap, Risk: &riskResult})
 			if result.Decision == policy.Deny {
 				proxy.audit.Record(riskEvent(ctx, definition.ID, "policy_denied", riskResult, time.Since(started)))
 				return &mcp.CallToolResult{IsError: true}, fmt.Errorf("policy denied: %s", result.Reason)
 			}
 		}
-		result, err := session.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: request.Params.Arguments})
+		result, err := session.CallTool(ctx, &mcp.CallToolParams{Name: toolName, Arguments: arguments})
 		outcome := "success"
 		if err != nil {
 			outcome = "upstream_error"
@@ -159,6 +174,16 @@ func (proxy *Proxy) toolHandler(definition upstream.Definition, session *mcp.Cli
 		proxy.audit.Record(riskEvent(ctx, definition.ID, outcome, riskResult, time.Since(started)))
 		return result, err
 	}
+}
+
+func dlpEvent(ctx context.Context, upstreamID, outcome string, result dlp.Result, duration time.Duration) audit.Event {
+	detectors := make([]string, 0, len(result.Matches))
+	paths := make([]string, 0, len(result.Matches))
+	for _, match := range result.Matches {
+		detectors = append(detectors, match.DetectorID)
+		paths = append(paths, match.Path)
+	}
+	return audit.Event{RequestID: requestIDFromContext(ctx), UpstreamID: upstreamID, MCPMethod: "tools/call", Outcome: outcome, Duration: duration, OccurredAt: time.Now(), DLPAction: string(result.Action), DLPDetectors: detectors, DLPPaths: paths}
 }
 
 func (proxy *Proxy) RiskMetrics() string {

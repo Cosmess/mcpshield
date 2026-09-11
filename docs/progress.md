@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M5 DLP and secret detection |
-| Status | M5 specification in progress |
-| Active branch | `feature/m5-dlp-spec` |
-| Last merged PR | #25 `docs: close M4 integration checkpoint` |
-| Last verified commit | `0773312` |
-| Next vertical slice | Review/merge M5 specification, then implement T1-T6 |
+| Status | M5 implementation in progress |
+| Active branch | `feature/m5-dlp-implementation` |
+| Last merged PR | #26 `docs: specify M5 DLP and secret detection` |
+| Last verified commit | `5dd5f51` |
+| Next vertical slice | Add response inspection and DLP metrics |
 
 ## Completed
 
@@ -43,10 +43,13 @@
 - M4 sanitized audit metadata and fixed risk metrics are implemented and verified.
 - M4 verification is `PASS WITH RESIDUAL RISKS`; residual risks and deferred work remain documented in the verification report.
 - M5 DLP and secret detection specification, design, and tasks prepared.
+- M5 T1-T4 DLP core and request-side proxy integration implemented.
+- M5 verification is `PASS WITH GAPS`; response inspection and dedicated metrics remain.
 
 ## In progress
 
-- Complete M5 specification review and merge before implementation.
+- Complete response-side inspection and DLP metrics.
+- Merge the M5 implementation PR.
 
 ## Not started
 
