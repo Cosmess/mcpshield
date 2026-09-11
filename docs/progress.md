@@ -4,12 +4,12 @@
 
 | Field | Value |
 | --- | --- |
-| Phase | M1 remote MCP proxy |
-| Status | M1 complete with residual risks |
-| Active branch | `main` |
-| Last merged PR | #8 `feat: implement M1 remote MCP proxy` |
-| Last verified commit | `f6207cf` |
-| Next vertical slice | M2: authentication and identity |
+| Phase | M2 authentication and identity |
+| Status | M2 specification in progress |
+| Active branch | `feature/m2-authentication-spec` |
+| Last merged PR | #9 `docs: close M1 progress checkpoint` |
+| Last verified commit | `bb69c3a` |
+| Next vertical slice | Review/merge M2 specification, then implement T1-T6 |
 
 ## Completed
 
@@ -29,16 +29,13 @@
 ## In progress
 
 - Add CI gates before the next implementation slice is merged.
-- Add CI gates before the next implementation slice is merged.
-- Specify M2 authentication and identity after the M1 risks are reviewed.
+- Review and merge the M2 specification before implementation.
+- M2 authentication and identity specification, design, and tasks prepared.
 
 ## Not started
 
 - PostgreSQL migrations and audit persistence.
-- MCP SDK integration and proxy flow.
-- PostgreSQL migrations and audit persistence.
-- MCP SDK integration and proxy flow.
-- Authentication, native policy engine, risk engine, DLP, approvals, Kafka, and AI.
+- Native policy engine, risk engine, DLP, approvals, Kafka, and AI.
 
 ## Current verification
 
@@ -50,8 +47,9 @@ M0 is `PASS`. M1 is `PASS WITH RESIDUAL RISKS`; M1 risks are documented in
 PR #1 merged the initial documentation and agent harness, PR #2 recorded that checkpoint,
 PR #3 merged the M0 specification, PR #4 merged the gateway foundation, PR #5 closed
 the M0 verification gaps, PR #6 closed the M0 progress checkpoint, PR #7 merged the
-M1 specification, and PR #8 merged the M1 implementation. No GitHub status checks are
-configured yet.
+M1 specification, and PR #8 merged the M1 implementation. PR #9 recorded the M1
+checkpoint. CI is now defined in `.github/workflows/ci.yml`; branch protection still needs
+to be enabled in GitHub.
 
 ## Working agreement
 
