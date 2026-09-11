@@ -4,12 +4,12 @@
 
 | Field | Value |
 | --- | --- |
-| Phase | M4 deterministic risk engine |
-| Status | M4 PASS WITH RESIDUAL RISKS |
-| Active branch | `main` |
-| Last merged PR | #23 `feat: integrate M4 risk with policy and proxy` |
-| Last verified commit | `a1d34a6` |
-| Next vertical slice | M5 DLP and secret detection |
+| Phase | M5 DLP and secret detection |
+| Status | M5 specification in progress |
+| Active branch | `feature/m5-dlp-spec` |
+| Last merged PR | #25 `docs: close M4 integration checkpoint` |
+| Last verified commit | `0773312` |
+| Next vertical slice | Review/merge M5 specification, then implement T1-T6 |
 
 ## Completed
 
@@ -42,15 +42,16 @@
 - M4 policy/proxy integration completed via PR #23 with merge commit `a1d34a6`.
 - M4 sanitized audit metadata and fixed risk metrics are implemented and verified.
 - M4 verification is `PASS WITH RESIDUAL RISKS`; residual risks and deferred work remain documented in the verification report.
+- M5 DLP and secret detection specification, design, and tasks prepared.
 
 ## In progress
 
-- Begin M5 DLP and secret detection specification.
+- Complete M5 specification review and merge before implementation.
 
 ## Not started
 
 - PostgreSQL migrations and audit persistence.
-- DLP, approvals, Kafka, and AI.
+- Approvals, Kafka, and AI.
 
 ## Current verification
 

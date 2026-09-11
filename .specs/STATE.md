@@ -10,9 +10,9 @@
 
 ## Handoff
 
-- Current phase: M4 integration merged via PR #23; documentation checkpoint closed via PR #24.
-- Active work: prepare the M5 DLP and secret detection specification.
-- Next action: begin M5 DLP and secret detection.
+- Current phase: M5 specification in progress.
+- Active work: M5 specification review of the DLP and secret detection requirements, design, and tasks.
+- Next action: validate and merge the M5 specification before implementation.
 - Current status: PASS WITH RESIDUAL RISKS.
 - Completed: policy/proxy integration, sanitized audit metadata, and fixed risk metrics.
 - Merge commit: `a1d34a6`.
