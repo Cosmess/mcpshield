@@ -13,6 +13,9 @@ type Event struct {
 	ProtocolVersion string
 	Duration        time.Duration
 	OccurredAt      time.Time
+	RiskScore       int
+	RiskSeverity    string
+	RiskSignals     []string
 }
 
 type Sink interface {

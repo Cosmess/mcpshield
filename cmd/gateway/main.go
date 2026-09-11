@@ -67,6 +67,7 @@ func run(parent context.Context, logger *slog.Logger) error {
 		proxy.SetPolicy(engine)
 	}
 	api.SetMCPHandler(proxy.Handler())
+	api.SetExtraMetrics(proxy.RiskMetrics)
 	server := &http.Server{
 		Addr:              config.HTTPAddr,
 		Handler:           api.Handler(),

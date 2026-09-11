@@ -28,6 +28,7 @@ type Server struct {
 	authAudit      audit.Sink
 	authSuccess    atomic.Uint64
 	authFailures   atomic.Uint64
+	extraMetrics   func() string
 }
 
 func New(logger *slog.Logger, requestTimeout time.Duration, maxBodyBytes int64) *Server {
@@ -52,6 +53,8 @@ func (server *Server) SetAuthenticator(authenticator Authenticator) {
 }
 
 func (server *Server) SetAuthAudit(sink audit.Sink) { server.authAudit = sink }
+
+func (server *Server) SetExtraMetrics(metrics func() string) { server.extraMetrics = metrics }
 
 func (server *Server) mcp(writer http.ResponseWriter, request *http.Request) {
 	if server.mcpHandler == nil {
@@ -98,6 +101,9 @@ func (server *Server) metrics(writer http.ResponseWriter, _ *http.Request) {
 	_, _ = writer.Write([]byte("mcpshield_http_requests_total " + strconv.FormatUint(server.requests.Load(), 10) + "\n"))
 	_, _ = writer.Write([]byte("mcpshield_auth_success_total " + strconv.FormatUint(server.authSuccess.Load(), 10) + "\n"))
 	_, _ = writer.Write([]byte("mcpshield_auth_failures_total " + strconv.FormatUint(server.authFailures.Load(), 10) + "\n"))
+	if server.extraMetrics != nil {
+		_, _ = writer.Write([]byte(server.extraMetrics()))
+	}
 }
 
 func (server *Server) recordAuth(request *http.Request, outcome string) {

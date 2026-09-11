@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -65,6 +66,12 @@ func TestProxyRelaysDiscoveryAndToolCalls(t *testing.T) {
 	if events := sink.Events(); len(events) != 1 || events[0].Outcome != "success" || events[0].MCPMethod != "tools/call" {
 		t.Fatalf("audit events = %#v, want successful tools/call event", events)
 	}
+	if event := sink.Events()[0]; event.RiskScore != 0 || event.RiskSeverity != "LOW" || len(event.RiskSignals) != 0 {
+		t.Fatalf("risk audit metadata = %#v", event)
+	}
+	if metrics := proxy.RiskMetrics(); !strings.Contains(metrics, "mcpshield_risk_evaluations_total 1") {
+		t.Fatalf("risk metrics = %q", metrics)
+	}
 	denyEngine, err := policy.New([]policy.Rule{{ID: "default-deny", Decision: policy.Deny}})
 	if err != nil {
 		t.Fatal(err)
@@ -76,6 +83,18 @@ func TestProxyRelaysDiscoveryAndToolCalls(t *testing.T) {
 	}
 	if events := sink.Events(); len(events) != 2 || events[1].Outcome != "policy_denied" {
 		t.Fatalf("audit events = %#v", events)
+	}
+}
+
+func TestRiskSignalsFollowOperationClass(t *testing.T) {
+	if got := riskSignals(policy.Admin); len(got) != 2 || got[0] != "privileged_operation" || got[1] != "write_operation" {
+		t.Fatalf("admin signals = %#v", got)
+	}
+	if got := riskSignals(policy.Execution); len(got) != 1 || got[0] != "execution_operation" {
+		t.Fatalf("execution signals = %#v", got)
+	}
+	if got := riskSignals(policy.Read); len(got) != 0 {
+		t.Fatalf("read signals = %#v", got)
 	}
 }
 
