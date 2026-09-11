@@ -10,7 +10,7 @@
 
 ## Handoff
 
-- Current phase: M3 complete with residual risks.
-- Active work: review and merge the M3 startup-wiring PR.
-- Next action: specify the M4 deterministic risk engine after M3 merge.
+- Current phase: M4 specification in progress.
+- Active work: review the deterministic risk engine requirements, design, and tasks.
+- Next action: validate and merge the M4 specification before implementation.
 - Known blockers: GitHub status checks and branch protection are not configured yet.
