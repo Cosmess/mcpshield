@@ -65,6 +65,10 @@ O proxy fica disponivel em `/mcp/mock`. O M1 usa o SDK oficial Go, Streamable HT
 `2026-07-28`. Autenticacao, politicas, credenciais de upstream e protecao completa contra
 SSRF ainda pertencem as proximas fases.
 
+Para carregar politicas nativas no startup, defina `MCP_SHIELD_POLICY_FILE` apontando para
+um documento JSON como [policies/example.json](policies/example.json). A politica padrao e
+deny quando nenhuma regra corresponder.
+
 ## Licenca
 
 A licenca sera definida antes da primeira distribuicao publica do codigo.

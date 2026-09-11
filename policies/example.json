@@ -1,0 +1,17 @@
+{
+  "policies": [
+    {
+      "id": "developer-read",
+      "priority": 10,
+      "decision": "ALLOW",
+      "roles": ["developer"],
+      "toolPattern": "github.read_*",
+      "operation": "READ"
+    },
+    {
+      "id": "default-deny",
+      "priority": 0,
+      "decision": "DENY"
+    }
+  ]
+}

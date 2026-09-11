@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M3 native policy engine |
-| Status | M3 nearly complete; PR pending |
-| Active branch | `feature/m3-policy-loading` |
-| Last merged PR | #17 `docs: record M3 enforcement checkpoint` |
-| Last verified commit | `031e901` |
-| Next vertical slice | Wire policy document into gateway startup, then begin M4 risk engine |
+| Status | M3 complete with residual risks; PR pending |
+| Active branch | `feature/m3-policy-startup-wiring` |
+| Last merged PR | #18 `feat: add M3 policy loading and simulation` |
+| Last verified commit | `8888b39` |
+| Next vertical slice | Merge M3 startup wiring, then begin M4 risk engine |
 
 ## Completed
 
@@ -31,15 +31,16 @@
 - M2 gap fix adds auth audit/metrics, JWKS TTL/refresh tests, and token edge-case coverage.
 - M3 policy engine specification, design, and tasks prepared.
 - M3 T1-T3 policy core implemented and verified.
-- M3 verification is `PASS WITH GAPS`; gateway startup wiring remains.
+- M3 verification is `PASS WITH RESIDUAL RISKS`; see the policy verification report.
 - M3 policy enforcement now blocks DENY before upstream invocation and audits the decision.
 - PR #16 merged the M3 policy enforcement slice with the merge commit `9c0a9af`.
 - Structured policy loading and side-effect-free simulation are implemented and tested.
+- Gateway startup loads `MCP_SHIELD_POLICY_FILE` and attaches the compiled engine to the proxy.
 
 ## In progress
 
-- Wire policy loading into gateway startup configuration.
-- Merge the M3 loading/simulation PR.
+- Merge the M3 startup-wiring PR.
+- Begin M4 deterministic risk engine specification.
 
 ## Not started
 
