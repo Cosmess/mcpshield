@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M0 bootstrap |
-| Status | M0 verification complete; corrective PR in progress |
-| Active branch | `fix/m0-verification-gaps` |
-| Last merged PR | #4 `feat: establish M0 gateway foundation` |
-| Last verified commit | `74db1fb` |
-| Next vertical slice | Merge the corrective verification PR, then start M1 MCP reverse proxy |
+| Status | M0 complete |
+| Active branch | `main` |
+| Last merged PR | #5 `test: close M0 verification gaps` |
+| Last verified commit | `6cde428` |
+| Next vertical slice | M1: remote MCP reverse proxy |
 
 ## Completed
 
@@ -24,14 +24,13 @@
 
 ## In progress
 
-- Merge the current corrective branch with the completed M0 verification record.
-- Add CI gates before the first Go implementation is merged.
+- Add CI gates before the next implementation slice is merged.
+- Specify M1 remote MCP reverse proxy requirements and protocol baseline.
 
 ## Not started
 
-- Go module and binaries.
-- HTTP server and health endpoints.
-- Configuration validation and structured logging.
+- PostgreSQL migrations and audit persistence.
+- MCP SDK integration and proxy flow.
 - PostgreSQL migrations and audit persistence.
 - MCP SDK integration and proxy flow.
 - Authentication, native policy engine, risk engine, DLP, approvals, Kafka, and AI.
@@ -44,9 +43,9 @@ this slice yet.
 
 ## Latest merge
 
-PR #1 merged the initial documentation and agent harness into `main`, and PR #2 recorded
-that checkpoint. No GitHub status checks are configured yet. The M0 specification branch
-contains no Go implementation; it defines the obligations and proof plan for the next slice.
+PR #1 merged the initial documentation and agent harness, PR #2 recorded that checkpoint,
+PR #3 merged the M0 specification, PR #4 merged the gateway foundation, and PR #5 closed
+the M0 verification gaps. No GitHub status checks are configured yet.
 
 ## Working agreement
 
