@@ -172,6 +172,8 @@ type Service struct {
 	clock      func() time.Time
 }
 
+func (service *Service) Repository() Repository { return service.repository }
+
 func NewService(repository Repository) *Service {
 	return &Service{repository: repository, clock: time.Now}
 }

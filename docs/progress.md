@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M6 human approval |
-| Status | M6 implementation in progress |
-| Active branch | `feature/m6-approval-implementation` |
-| Last merged PR | #30 `docs: specify M6 human approval workflow` |
-| Last verified commit | `bc3cc87` |
-| Next vertical slice | Integrate REQUIRE_APPROVAL with proxy and add lifecycle audit/metrics |
+| Status | M6 approval gate in progress |
+| Active branch | `feature/m6-approval-proxy-gate` |
+| Last merged PR | #31 `feat: add M6 approval domain foundation` |
+| Last verified commit | `de97b8e` |
+| Next vertical slice | Add reviewer/consume API and lifecycle audit/metrics |
 
 ## Completed
 
@@ -49,10 +49,12 @@
 - M6 human approval specification, design, and tasks prepared.
 - M6 T1-T3 approval domain, fingerprinting, reviewer guards, expiry, and atomic in-memory consumption implemented.
 - M6 verification is `PASS WITH GAPS`; proxy integration and durable PostgreSQL storage remain.
+- M6 T4 approval gate creates PENDING and prevents automatic upstream execution.
 
 ## In progress
 
-- Complete M6 proxy integration and lifecycle audit/metrics.
+- Complete reviewer/consume API and lifecycle audit/metrics.
+- Merge the M6 approval gate PR.
 - Merge the M6 implementation PR.
 
 ## Not started
