@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M6 human approval |
-| Status | M6 consume integration in progress |
-| Active branch | `feature/m6-approval-proxy-gate` |
-| Last merged PR | #32 `feat: gate proxy calls on human approval` |
-| Last verified commit | `04294fb` |
-| Next vertical slice | Add HTTP reviewer operations, lifecycle metrics, and PostgreSQL repository |
+| Status | M6 lifecycle API/metrics in progress |
+| Active branch | `feature/m6-approval-api-metrics` |
+| Last merged PR | #33 `feat: consume bound approvals before upstream` |
+| Last verified commit | `8713cd9` |
+| Next vertical slice | Add lifecycle audit hook, then PostgreSQL repository |
 
 ## Completed
 
@@ -51,12 +51,12 @@
 - M6 verification is `PASS WITH GAPS`; proxy integration and durable PostgreSQL storage remain.
 - M6 T4 approval gate creates PENDING and prevents automatic upstream execution.
 - M6 reviewer/consume service operations are wired to bound proxy headers.
+- M6 reviewer routes and fixed lifecycle metrics are implemented and tested.
 
 ## In progress
 
-- Add HTTP reviewer operations and lifecycle metrics.
-- Merge the M6 consume integration PR.
-- Merge the M6 implementation PR.
+- Add approval lifecycle audit hook.
+- Merge the M6 API/metrics PR.
 
 ## Not started
 
