@@ -100,12 +100,27 @@ fonte autoritativa da auditoria ou das aprovacoes.
 - Inspecao de request e response MCP sem registrar valores secretos.
 - CI, testes de integracao, race detector, vet e validacao Docker Compose.
 
-## Proximas fases
+## Escopo final do portfolio
 
-- **M6:** human approval, TTL, fingerprint, replay protection e consumo atomico.
-- **M7:** adaptador OPA/Rego depois da semantica nativa estabilizada.
-- **M8:** PostgreSQL autoritativo, transactional outbox e eventos Kafka.
-- **M9:** assistente de seguranca com IA apenas para explicacao e analise.
+**Final M7 portfolio scope:** implemented capabilities are documented below. M8-M10 are
+future boundaries outside this portfolio closure.
+
+Project progress/state: **M7 complete**. Verification status: **PASS WITH RESIDUAL RISKS**.
+Residual risks are intentionally documented in the final status report.
+
+O projeto esta encerrado no **M7** como uma demonstracao de gateway MCP seguro,
+policy-driven e auditavel. O escopo entregue cobre MCP remoto, upstreams confiaveis,
+JWT/OIDC foundation, identidade tipada, policy native com default deny, risk engine,
+DLP, human approval, PostgreSQL para approvals e a fundacao do adapter OPA/Rego.
+
+O M7 entrega input OPA sanitizado e output estritamente mapeado. Selecao runtime completa,
+fallback operacional, metricas especificas de OPA e simulation via OPA ficam registradas
+como extensoes futuras, sem reduzir a autoridade do engine nativo.
+
+As fases seguintes ficam fora do encerramento deste portfolio:
+
+- **M8:** transactional outbox e Kafka para eventos de auditoria;
+- **M9:** assistente de seguranca com IA apenas para explicacao e analise;
 - **M10:** Redis distribuido, mTLS, Kubernetes, HA, load tests e hardening.
 
 IA e consultiva. Ela pode explicar uma negacao ou resumir eventos, mas nao pode autorizar,
@@ -113,12 +128,13 @@ aprovar, executar ou alterar policies automaticamente.
 
 ## Estado atual
 
-O bootstrap e a primeira fatia MCP ja foram concluidos. A implementacao continua em
+O projeto esta encerrado no M7 para fins de portfolio. A implementacao foi conduzida em
 fatias verticais usando desenvolvimento orientado a especificacao (SDD), com verificacao
-independente antes de considerar uma tarefa concluida.
+independente antes de considerar cada milestone concluido.
 
-Consulte [docs/progress.md](docs/progress.md) para o estado atual, o que foi
-concluido e os proximos blocos de trabalho.
+Consulte [docs/progress.md](docs/progress.md) e
+[docs/portfolio-final-status.md](docs/portfolio-final-status.md) para o estado final,
+evidencias, limites e extensoes futuras.
 
 ## Como o projeto sera desenvolvido
 
