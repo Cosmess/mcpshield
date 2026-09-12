@@ -5,11 +5,11 @@
 | Field | Value |
 | --- | --- |
 | Phase | M7 OPA/Rego adapter |
-| Status | M7 implementation in progress |
-| Active branch | `feature/m7-opa-adapter-implementation` |
-| Last merged PR | #38 `docs: specify M7 OPA Rego adapter` |
-| Last verified commit | `4542b74` |
-| Next vertical slice | Integrate evaluator selection/fallback and OPA simulation |
+| Status | M7 complete; portfolio scope closed |
+| Active branch | `main` |
+| Last merged PR | #39 `feat: add M7 OPA adapter foundation` |
+| Last verified commit | `2658781` |
+| Next vertical slice | None in the finalized portfolio scope |
 
 ## Completed
 
@@ -56,12 +56,12 @@
 - M6 Testcontainers PostgreSQL tests verify migration, lifecycle, replay rejection, and one-success concurrent consume.
 - M7 OPA/Rego adapter specification, design, and tasks prepared.
 - M7 T1-T3 evaluator contract, sanitized input, strict output mapping, and OPA client implemented.
-- M7 verification is `PASS WITH GAPS`; evaluator selection, fallback, audit, and simulation remain.
+- M7 verification is `PASS WITH RESIDUAL RISKS`; the portfolio scope is closed at M7.
+- Final portfolio boundaries are documented in `docs/portfolio-final-status.md`.
 
 ## In progress
 
-- Complete M7 evaluator selection, fallback, audit, and simulation.
-- Merge the M7 implementation PR.
+- Keep M7 documentation and verification evidence current if the repository is revisited.
 
 ## Not started
 

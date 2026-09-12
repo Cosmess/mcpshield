@@ -10,9 +10,9 @@
 
 ## Handoff
 
-- Current phase: M7 implementation in progress.
-- Active work: integrate evaluator selection, fallback, audit, and simulation.
-- Next action: close M7 verification gaps before merge.
+- Current phase: M7 complete; portfolio scope closed.
+- Active work: none in the finalized M7 scope.
+- Next action: preserve verification evidence and future-extension boundaries.
 - Current status: PASS WITH RESIDUAL RISKS.
 - Completed: request/response inspection, sanitized DLP audit metadata, and fixed DLP inspection/block/redaction counters.
 - Merge commit: `ff01f54` (PR #28).
