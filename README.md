@@ -102,9 +102,6 @@ fonte autoritativa da auditoria ou das aprovacoes.
 
 ## Escopo final do portfolio
 
-**Final M7 portfolio scope:** implemented capabilities are documented below. The portfolio
-scope ends at M7; no additional milestone is planned in this repository.
-
 Project progress/state: **M7 complete**. Verification status: **PASS WITH RESIDUAL RISKS**.
 Residual risks are intentionally documented in the final status report.
 
