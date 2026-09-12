@@ -66,7 +66,7 @@
 ## Not started
 
 - PostgreSQL migrations and audit persistence.
-- Kafka and AI.
+- No additional roadmap milestones are planned after M7 in this repository.
 
 ## Current verification
 

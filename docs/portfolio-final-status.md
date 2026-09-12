@@ -47,7 +47,8 @@ The following are not claimed as complete production capabilities:
 - autonomous AI authorization or approval;
 - Kubernetes HA, mTLS rollout, distributed Redis, and load-test publication.
 
-These are future extensions, not hidden requirements of the final M7 portfolio milestone.
+These capabilities are outside the final M7 portfolio scope and are not planned as additional
+milestones in this repository.
 
 ## Security position
 

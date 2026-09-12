@@ -102,9 +102,6 @@ fonte autoritativa da auditoria ou das aprovacoes.
 
 ## Escopo final do portfolio
 
-**Final M7 portfolio scope:** implemented capabilities are documented below. M8-M10 are
-future boundaries outside this portfolio closure.
-
 Project progress/state: **M7 complete**. Verification status: **PASS WITH RESIDUAL RISKS**.
 Residual risks are intentionally documented in the final status report.
 
@@ -117,11 +114,8 @@ O M7 entrega input OPA sanitizado e output estritamente mapeado. Selecao runtime
 fallback operacional, metricas especificas de OPA e simulation via OPA ficam registradas
 como extensoes futuras, sem reduzir a autoridade do engine nativo.
 
-As fases seguintes ficam fora do encerramento deste portfolio:
-
-- **M8:** transactional outbox e Kafka para eventos de auditoria;
-- **M9:** assistente de seguranca com IA apenas para explicacao e analise;
-- **M10:** Redis distribuido, mTLS, Kubernetes, HA, load tests e hardening.
+O escopo do portfolio termina no M7. Extensoes operacionais como outbox, Kafka, assistente
+de IA, Redis distribuido, mTLS, Kubernetes, HA e load tests nao fazem parte deste repositorio.
 
 IA e consultiva. Ela pode explicar uma negacao ou resumir eventos, mas nao pode autorizar,
 aprovar, executar ou alterar policies automaticamente.
