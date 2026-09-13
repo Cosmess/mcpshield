@@ -1,50 +1,55 @@
 # MCPShield
 
-Gateway de seguranca e firewall de politicas para o Model Context Protocol (MCP).
+Gateway de seguranca e governanca para o Model Context Protocol (MCP), escrito em Go.
 
-O MCPShield fica entre clientes de IA e servidores MCP. Ele autentica o chamador,
-resolve apenas upstreams confiaveis, avalia policy e risco, inspeciona dados sensiveis,
-exige aprovacao humana para operacoes criticas e registra as decisoes de seguranca.
+O MCPShield fica entre um cliente de IA e servidores MCP que oferecem ferramentas como
+GitHub, filesystem, bancos de dados, cloud ou APIs internas. Antes de uma chamada chegar
+ao upstream, o gateway autentica o principal, aplica policy, calcula risco, inspeciona
+segredos, pode exigir aprovacao humana e registra uma trilha de auditoria.
 
-O MCPShield nao e um servidor MCP de negocio e nao substitui os servidores MCP upstream.
-Ele e o ponto de enforcement e governanca entre o agente e as ferramentas que o agente
-pode utilizar. O agente de IA nunca e a autoridade final para permitir uma operacao.
+O projeto resolve um problema simples e importante: um modelo pode decidir **qual
+ferramenta quer chamar**, mas nunca deve decidir sozinho **se tem permissao para chama-la**.
+Essa autoridade pertence ao gateway e as suas regras deterministicas.
 
-## Para que serve
+## Problema e objetivo
 
-Sem um gateway, um agente pode chamar diretamente ferramentas de filesystem, shell,
-bancos, GitHub, cloud ou APIs internas. Isso dificulta responder:
+Sem uma camada de governanca, chamadas de agentes tendem a misturar identidade,
+autorizacao, transporte e dados sensiveis no mesmo fluxo. Isso dificulta responder:
 
 - quem iniciou a operacao;
-- qual tenant e qual agente estavam envolvidos;
+- qual tenant, cliente e agente estavam envolvidos;
 - qual policy permitiu ou negou a chamada;
-- se havia risco elevado ou segredo no payload;
+- qual risco foi detectado;
+- se havia secret ou payload sensivel;
 - se uma operacao precisava de aprovacao humana;
-- como investigar e auditar o resultado depois.
+- como investigar o evento depois.
 
-O MCPShield centraliza essas decisoes sem colocar a autorizacao nas maos do modelo.
+O MCPShield separa essas responsabilidades e cria um ponto de enforcement observavel,
+testavel e independente do modelo de IA.
 
-## Como funciona
+## Arquitetura
 
-```text
-AI Client / Agent
-	|
-	| MCP over Streamable HTTP
-	v
-+-----------------------------+
-| MCPShield Gateway            |
-|                             |
-| AuthN -> Principal           |
-|        -> DLP               |
-|        -> Risk              |
-|        -> Policy            |
-|        -> Approval          |
-|        -> Audit             |
-+---------------+-------------+
-		|
-		| MCP only after enforcement
-		v
-	Trusted MCP Server
+```mermaid
+flowchart LR
+	client[AI Client / Agent]
+	gateway[MCPShield Gateway]
+	upstream[Trusted MCP Server]
+
+	client -->|MCP over Streamable HTTP| gateway
+	gateway -->|MCP after enforcement| upstream
+
+	subgraph security[Security pipeline]
+		auth[AuthN and Principal]
+		dlp[DLP and Secret Detection]
+		risk[Deterministic Risk]
+		policy[Native Policy]
+		approval[Human Approval]
+		audit[Audit and Metrics]
+
+		auth --> dlp --> risk --> policy --> approval --> audit
+	end
+
+	gateway --> security
 ```
 
 Fluxo de uma chamada:
@@ -59,33 +64,56 @@ Fluxo de uma chamada:
 8. Respostas sao inspecionadas antes de voltar ao cliente.
 9. O resultado e auditado sem armazenar tokens ou secrets crus.
 
-## Onde entra o PostgreSQL
+O servidor MCP upstream continua sendo dono das ferramentas e dos dados de negocio. O
+MCPShield nao substitui esse servidor e nao acessa diretamente seu banco de negocio para
+autorizar chamadas.
 
-MCP nao e um banco de dados. MCP e o protocolo de comunicacao entre o cliente e o
-servidor de ferramentas. O MCPShield usa PostgreSQL como banco do proprio gateway,
-separado de qualquer banco de negocio usado por um servidor MCP upstream.
+## Tecnologias
+
+| Area | Tecnologia |
+| --- | --- |
+| Linguagem | Go 1.27 |
+| HTTP | `net/http` |
+| MCP | Official Go MCP SDK, Streamable HTTP, MCP `2026-07-28` |
+| Autenticacao | JWT/OIDC foundation, JWKS cacheado |
+| Policy | Native Go policy engine, default deny, OPA/Rego adapter foundation |
+| Risk | Deterministic score de 0 a 100 |
+| DLP | Secret detection, `BLOCK`, `REDACT`, `AUDIT` |
+| Persistencia | PostgreSQL opcional para approvals |
+| Testes | `testing`, `httptest`, Testcontainers, race detector |
+| Observabilidade | `log/slog`, health endpoints, Prometheus-style metrics |
+| Execucao local | Docker Compose |
+
+## Componentes principais
+
+- `cmd/gateway`: montagem do processo, configuracao e graceful shutdown.
+- `internal/auth`: validacao JWT e criacao do principal.
+- `internal/upstream`: registry de destinos MCP confiaveis.
+- `internal/mcpproxy`: proxy Streamable HTTP e enforcement antes do upstream.
+- `internal/policy`: policy nativa, default deny e decisoes deterministicas.
+- `internal/risk`: sinais e score de risco explicavel.
+- `internal/dlp`: deteccao e redaction de secrets em payloads JSON.
+- `internal/approval`: workflow de aprovacao, fingerprint, TTL e consumo unico.
+- `internal/opa`: fundacao do adapter OPA/Rego com input sanitizado.
+- `internal/audit`: eventos metadata-only e sink de auditoria.
+
+## PostgreSQL e MCP
+
+MCP e um protocolo de comunicacao, nao um banco de dados. O PostgreSQL pertence ao
+MCPShield e armazena estado de governanca do gateway:
 
 ```text
-MCPShield PostgreSQL                 Upstream MCP PostgreSQL
----------------------                -----------------------
-policies                             business data
-approval records                     customer records
-audit events                         domain state
-upstream registry                    tool-owned persistence
-tenant and identity mapping
+MCPShield PostgreSQL             Banco do servidor MCP upstream
+---------------------            -----------------------------
+approvals                         business data
+policies                           customer records
+audit/security events              domain state
+upstream registry                  tool-owned persistence
 outbox events
 ```
 
-O PostgreSQL do MCPShield sera a fonte autoritativa para estado de seguranca e governanca:
-
-- policies e versoes de policy;
-- approvals, TTL, fingerprint e consumo unico;
-- audit events e security events;
-- registro de tenants, principals e upstreams;
-- outbox para futuras publicacoes em Kafka.
-
-Redis podera ser usado futuramente para cache, rate limit e estado efemero. Ele nao sera a
-fonte autoritativa da auditoria ou das aprovacoes.
+O banco do upstream continua separado. Redis, quando introduzido, servira para cache,
+rate limit e estado efemero; nao sera a fonte autoritativa de approvals ou auditoria.
 
 ## O que ja esta implementado
 
@@ -100,35 +128,14 @@ fonte autoritativa da auditoria ou das aprovacoes.
 - Inspecao de request e response MCP sem registrar valores secretos.
 - CI, testes de integracao, race detector, vet e validacao Docker Compose.
 
-## Escopo final do portfolio
-
-Project progress/state: **M7 complete**. Verification status: **PASS WITH RESIDUAL RISKS**.
-Residual risks are intentionally documented in the final status report.
-
-O projeto esta encerrado no **M7** como uma demonstracao de gateway MCP seguro,
-policy-driven e auditavel. O escopo entregue cobre MCP remoto, upstreams confiaveis,
-JWT/OIDC foundation, identidade tipada, policy native com default deny, risk engine,
-DLP, human approval, PostgreSQL para approvals e a fundacao do adapter OPA/Rego.
-
-O M7 entrega input OPA sanitizado e output estritamente mapeado. Selecao runtime completa,
-fallback operacional, metricas especificas de OPA e simulation via OPA ficam registradas
-como extensoes futuras, sem reduzir a autoridade do engine nativo.
-
-O escopo do portfolio termina no M7. Extensoes operacionais como outbox, Kafka, assistente
-de IA, Redis distribuido, mTLS, Kubernetes, HA e load tests nao fazem parte deste repositorio.
-
-IA e consultiva. Ela pode explicar uma negacao ou resumir eventos, mas nao pode autorizar,
-aprovar, executar ou alterar policies automaticamente.
-
 ## Estado atual
 
-O projeto esta encerrado no M7 para fins de portfolio. A implementacao foi conduzida em
-fatias verticais usando desenvolvimento orientado a especificacao (SDD), com verificacao
-independente antes de considerar cada milestone concluido.
+O projeto possui um gateway MCP funcional e uma base de seguranca evolutiva. A implementacao
+foi conduzida em fatias verticais usando desenvolvimento orientado a especificacao (SDD),
+com verificacao independente antes de considerar cada milestone concluido.
 
-Consulte [docs/progress.md](docs/progress.md) e
-[docs/portfolio-final-status.md](docs/portfolio-final-status.md) para o estado final,
-evidencias, limites e extensoes futuras.
+Consulte [docs/progress.md](docs/progress.md) para o estado atual e
+[docs/portfolio-final-status.md](docs/portfolio-final-status.md) para o resumo tecnico.
 
 ## Como o projeto sera desenvolvido
 
@@ -179,12 +186,120 @@ O proxy fica disponivel em `/mcp/mock`. O M1 usa o SDK oficial Go, Streamable HT
 `2026-07-28`. Autenticacao, politicas, credenciais de upstream e protecao completa contra
 SSRF ainda pertencem as proximas fases.
 
+## Como usar o MCPShield em um projeto
+
+O MCPShield nao precisa ser incorporado ao codigo do seu servidor MCP. O uso normal e:
+
+```text
+Seu agente ou aplicacao MCP
+					|
+					| aponta para o MCPShield
+					v
+MCPShield /mcp/{upstreamID}
+					|
+					| encaminha somente depois do enforcement
+					v
+Servidor MCP do seu projeto
+```
+
+### 1. Registre o upstream
+
+Em desenvolvimento local, configure o servidor MCP confiavel por ambiente:
+
+```bash
+MCP_SHIELD_UPSTREAM_ID=orders \
+MCP_SHIELD_UPSTREAM_ENDPOINT=http://127.0.0.1:9000/mcp \
+go run ./cmd/gateway
+```
+
+O endpoint publico do gateway passa a ser:
+
+```text
+http://127.0.0.1:8080/mcp/orders
+```
+
+O cliente nunca deve enviar uma URL de destino arbitraria. Ele envia apenas o ID do
+upstream publicado pelo gateway.
+
+### 2. Aponte o cliente MCP para o gateway
+
+Clientes que aceitam servidores MCP remotos normalmente usam uma configuracao equivalente
+a esta. O nome exato da chave pode variar entre clientes:
+
+```json
+{
+	"mcpServers": {
+		"orders-secure": {
+			"url": "http://127.0.0.1:8080/mcp/orders",
+			"headers": {
+				"Authorization": "Bearer <development-token>"
+			}
+		}
+	}
+}
+```
+
+Em producao, use um token JWT emitido pelo seu IdP e configure `MCP_SHIELD_OIDC_ISSUER`,
+`MCP_SHIELD_OIDC_AUDIENCE` e `MCP_SHIELD_OIDC_JWKS_URL`. Nao coloque tokens reais em
+arquivos versionados.
+
+### 3. Use pelo SDK Go
+
+Uma aplicacao Go pode apontar o SDK diretamente para o endpoint protegido:
+
+```go
+type bearerTransport struct {
+	token string
+	base  http.RoundTripper
+}
+
+func (transport bearerTransport) RoundTrip(request *http.Request) (*http.Response, error) {
+	clone := request.Clone(request.Context())
+	clone.Header.Set("Authorization", "Bearer "+transport.token)
+	return transport.base.RoundTrip(clone)
+}
+
+client := mcp.NewClient(
+		&mcp.Implementation{Name: "orders-agent", Version: "1.0.0"},
+		nil,
+)
+
+session, err := client.Connect(ctx, &mcp.StreamableClientTransport{
+		Endpoint: "http://127.0.0.1:8080/mcp/orders",
+		HTTPClient: &http.Client{
+			Transport: bearerTransport{token: tokenFromSecretManager, base: http.DefaultTransport},
+				Timeout: 10 * time.Second,
+		},
+}, nil)
+if err != nil {
+		return err
+}
+defer session.Close()
+```
+
+O exemplo acima mostra a fronteira de integracao; a implementacao real do `RoundTripper`
+deve obter o token de um secret manager ou provider OAuth, nunca de um valor hardcoded.
+
+### 4. Carregue uma policy
+
+Para o modo nativo, use `MCP_SHIELD_POLICY_FILE`:
+
+```bash
+MCP_SHIELD_POLICY_FILE=policies/example.json \
+MCP_SHIELD_UPSTREAM_ID=orders \
+MCP_SHIELD_UPSTREAM_ENDPOINT=http://127.0.0.1:9000/mcp \
+go run ./cmd/gateway
+```
+
+Sem uma regra correspondente, o policy engine usa `DENY`. Uma chamada bloqueada nao chega
+ao servidor MCP upstream.
+
 Para carregar politicas nativas no startup, defina `MCP_SHIELD_POLICY_FILE` apontando para
 um documento JSON como [policies/example.json](policies/example.json). A politica padrao e
 deny quando nenhuma regra corresponder.
 
-O PostgreSQL sera adicionado quando o repository de approvals/auditoria for implementado.
-Isso evita esconder estado de seguranca em memoria quando o sistema passar a operar em HA.
+O PostgreSQL e usado pelo repository de approvals quando configurado. O modo local sem
+`MCP_SHIELD_DATABASE_URL` continua usando memoria para facilitar desenvolvimento.
 
 Quando `MCP_SHIELD_DATABASE_URL` estiver configurado, o gateway usa PostgreSQL para o
 estado de approvals e aplica a migration de approval no startup. Sem essa variavel, o
