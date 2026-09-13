@@ -320,7 +320,3 @@ governanca e seguranca; ele continua separado do banco de negocio do servidor MC
 - [Fluxo de engenharia](docs/engineering-workflow.md)
 - [Especificacoes SDD](.specs/README.md)
 - [Contribuicao](CONTRIBUTING.md)
-
-## Licenca
-
-A licenca sera definida antes da primeira distribuicao publica do codigo.
