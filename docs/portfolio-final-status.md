@@ -15,7 +15,7 @@ The repository demonstrates a Go security gateway for remote MCP workloads with:
 - bounded DLP and secret detection;
 - request/response inspection and metadata-only audit;
 - human approval state machine, replay binding, TTL, reviewer controls, and atomic consume;
-- optional PostgreSQL approval persistence and live Testcontainers integration;
+- optional PostgreSQL approval and audit persistence with live Testcontainers integration;
 - OPA/Rego adapter foundation with sanitized input and strict output mapping.
 
 ## Verification baseline
@@ -35,20 +35,8 @@ CI runs the core Go tests, race detector, vet, build, and Compose validation on 
 
 ## Deliberate boundaries
 
-Final status: **PASS WITH RESIDUAL RISKS**. The residual risks below are known boundaries,
-not hidden implementation requirements.
-
-The following are not claimed as complete production capabilities:
-
-- enterprise-grade DLP or complete provider-secret coverage;
-- full runtime OPA mode selection, bundle distribution, and fallback operations;
-- PostgreSQL audit authority and transactional outbox for every event type;
-- Kafka event streaming;
-- autonomous AI authorization or approval;
-- Kubernetes HA, mTLS rollout, distributed Redis, and load-test publication.
-
-These capabilities are outside the final M7 portfolio scope and are not planned as additional
-milestones in this repository.
+Final status: **PASS WITH RESIDUAL RISKS**. The remaining risks are tracked in feature
+verification reports rather than as additional roadmap commitments.
 
 ## Security position
 

@@ -49,7 +49,7 @@ func run(parent context.Context, logger *slog.Logger) error {
 	if err != nil {
 		return fmt.Errorf("create upstream registry: %w", err)
 	}
-	auditSink := audit.NewMemorySink(1024)
+	var auditSink audit.Sink = audit.NewMemorySink(1024)
 	proxy, err := mcpproxy.New(parent, registry, logger, auditSink)
 	if err != nil {
 		return fmt.Errorf("create MCP proxy: %w", err)
@@ -69,6 +69,10 @@ func run(parent context.Context, logger *slog.Logger) error {
 		if err := approval.ApplyMigration(parent, databasePool); err != nil {
 			return err
 		}
+		if err := audit.ApplyMigration(parent, databasePool); err != nil {
+			return err
+		}
+		auditSink = audit.NewPostgresSink(databasePool)
 		approvalRepository = approval.NewPostgresRepository(databasePool)
 	}
 	approvalService := approval.NewService(approvalRepository)
