@@ -48,7 +48,8 @@
 - PR #28 merged the M5 response inspection and metrics fix with merge commit `ff01f54`.
 - M6 human approval specification, design, and tasks prepared.
 - M6 T1-T3 approval domain, fingerprinting, reviewer guards, expiry, and atomic in-memory consumption implemented.
-- M6 verification is `PASS WITH GAPS`; proxy integration and durable PostgreSQL storage remain.
+- M6 verification is `PASS WITH RESIDUAL RISKS`; proxy integration, reviewer routes,
+  lifecycle metrics, and optional durable PostgreSQL approval storage are implemented.
 - M6 T4 approval gate creates PENDING and prevents automatic upstream execution.
 - M6 reviewer/consume service operations are wired to bound proxy headers.
 - M6 reviewer routes and fixed lifecycle metrics are implemented and tested.
@@ -58,6 +59,7 @@
 - M7 T1-T3 evaluator contract, sanitized input, strict output mapping, and OPA client implemented.
 - M7 verification is `PASS WITH RESIDUAL RISKS`; the portfolio scope is closed at M7.
 - Final portfolio boundaries are documented in `docs/portfolio-final-status.md`.
+- PostgreSQL audit migration, sink, startup wiring, and integration coverage are implemented.
 
 ## In progress
 
@@ -65,8 +67,7 @@
 
 ## Not started
 
-- PostgreSQL migrations and audit persistence.
-- No additional roadmap milestones are planned after M7 in this repository.
+- No additional roadmap milestones are planned in this repository.
 
 ## Current verification
 
@@ -74,8 +75,12 @@ M0 is `PASS`. M1 is `PASS WITH RESIDUAL RISKS`; M1 risks are documented in
 `.specs/features/m1-mcp-proxy/verification.md`.
 M4 is `PASS WITH RESIDUAL RISKS`; policy/proxy integration, sanitized audit metadata,
 and fixed risk metrics are complete. M5 is `PASS WITH RESIDUAL RISKS`; request/response
-inspection, sanitized DLP audit metadata, and fixed counters are complete. M6 human
-approval is next.
+inspection, sanitized DLP audit metadata, and fixed counters are complete. M6 is
+`PASS WITH RESIDUAL RISKS`; the approval gate, reviewer routes, proxy consumption flow,
+optional PostgreSQL approval repository, startup migration, and Testcontainers coverage
+are complete. M7 is `PASS WITH RESIDUAL RISKS`; the portfolio scope is closed at M7.
+PostgreSQL audit persistence is implemented for metadata-only audit events when
+`MCP_SHIELD_DATABASE_URL` is configured.
 
 ## Latest merge
 
@@ -84,12 +89,12 @@ PR #3 merged the M0 specification, PR #4 merged the gateway foundation, PR #5 cl
 the M0 verification gaps, PR #6 closed the M0 progress checkpoint, PR #7 merged the
 M1 specification, PR #8 merged the M1 implementation, PR #9 recorded the M1 checkpoint,
 PR #11 merged the M2 JWT authentication foundation, PR #16 merged M3 enforcement,
-PR #18 merged policy loading/simulation, and PR #19 merged M3 startup wiring. CI is defined in
+PR #18 merged policy loading/simulation, and PR #19 merged M3 startup wiring.
 PR #21 merged the M4 risk core with commit
 `ea46e11b92dead58544ebf127104d3df2c62c731`, PR #23 merged the M4 integration
 with commit `a1d34a6`, PR #24 closed the M4 documentation checkpoint, and PR #28 merged
-the M5 response/metrics fix with commit `ff01f54`. CI is defined in the repository
-operating model.
+the M5 response/metrics fix with commit `ff01f54`. PR #39 merged the M7 OPA adapter
+foundation. CI is defined in the repository operating model.
 
 ## Working agreement
 

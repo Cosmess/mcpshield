@@ -79,7 +79,7 @@ autorizar chamadas.
 | Policy | Native Go policy engine, default deny, OPA/Rego adapter foundation |
 | Risk | Deterministic score de 0 a 100 |
 | DLP | Secret detection, `BLOCK`, `REDACT`, `AUDIT` |
-| Persistencia | PostgreSQL opcional para approvals |
+| Persistencia | PostgreSQL opcional para approvals e eventos de auditoria |
 | Testes | `testing`, `httptest`, Testcontainers, race detector |
 | Observabilidade | `log/slog`, health endpoints, Prometheus-style metrics |
 | Execucao local | Docker Compose |
@@ -95,7 +95,7 @@ autorizar chamadas.
 - `internal/dlp`: deteccao e redaction de secrets em payloads JSON.
 - `internal/approval`: workflow de aprovacao, fingerprint, TTL e consumo unico.
 - `internal/opa`: fundacao do adapter OPA/Rego com input sanitizado.
-- `internal/audit`: eventos metadata-only e sink de auditoria.
+- `internal/audit`: eventos metadata-only, sink em memoria e sink PostgreSQL.
 
 ## PostgreSQL e MCP
 
@@ -109,11 +109,10 @@ approvals                         business data
 policies                           customer records
 audit/security events              domain state
 upstream registry                  tool-owned persistence
-outbox events
 ```
 
-O banco do upstream continua separado. Redis, quando introduzido, servira para cache,
-rate limit e estado efemero; nao sera a fonte autoritativa de approvals ou auditoria.
+O banco do upstream continua separado. O MCPShield guarda apenas estado de governanca e
+seguranca do gateway; dados de negocio continuam pertencendo ao servidor MCP upstream.
 
 ## O que ja esta implementado
 
@@ -126,6 +125,7 @@ rate limit e estado efemero; nao sera a fonte autoritativa de approvals ou audit
 - Risk engine deterministico com score de 0 a 100.
 - DLP e secret detection com `BLOCK`, `REDACT` e `AUDIT`.
 - Inspecao de request e response MCP sem registrar valores secretos.
+- Persistencia opcional em PostgreSQL para approvals e eventos de auditoria.
 - CI, testes de integracao, race detector, vet e validacao Docker Compose.
 
 ## Estado atual
@@ -298,12 +298,13 @@ Para carregar politicas nativas no startup, defina `MCP_SHIELD_POLICY_FILE` apon
 um documento JSON como [policies/example.json](policies/example.json). A politica padrao e
 deny quando nenhuma regra corresponder.
 
-O PostgreSQL e usado pelo repository de approvals quando configurado. O modo local sem
-`MCP_SHIELD_DATABASE_URL` continua usando memoria para facilitar desenvolvimento.
+O PostgreSQL e usado pelo repository de approvals e pelo sink de auditoria quando
+configurado. O modo local sem `MCP_SHIELD_DATABASE_URL` continua usando memoria para
+facilitar desenvolvimento.
 
 Quando `MCP_SHIELD_DATABASE_URL` estiver configurado, o gateway usa PostgreSQL para o
-estado de approvals e aplica a migration de approval no startup. Sem essa variavel, o
-modo local continua usando o repository em memoria:
+estado de approvals e eventos de auditoria, aplicando as migrations necessarias no
+startup. Sem essa variavel, o modo local continua usando repositories e sinks em memoria:
 
 ```bash
 MCP_SHIELD_DATABASE_URL=postgres://mcpshield:mcpshield@localhost:5432/mcpshield \
